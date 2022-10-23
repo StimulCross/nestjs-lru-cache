@@ -4,6 +4,7 @@ import type { CacheArgumentOptions } from '../interfaces/cache-argument-options.
 import { CACHE_INSTANCE, CACHE_INSTANCE_ID_PROPERTY } from '../lru-cache.constants';
 import { isObject } from '../utils/is-object';
 import { LruCache } from '../providers/lru-cache';
+import { wrapCacheKey } from '../utils/wrap-cache-key';
 
 function createCachedAsyncFunction(
 	target: object,
@@ -35,6 +36,8 @@ function createCachedAsyncFunction(
 		if (options.hashFunction) {
 			cacheKey += `:${options.hashFunction.apply(this, args)}`;
 		}
+
+		cacheKey = wrapCacheKey(cacheKey);
 
 		if ((mergedOptions.returnCached ?? true) && this[CACHE_INSTANCE].has(cacheKey, mergedOptions)) {
 			const cachedVal = this[CACHE_INSTANCE].get(cacheKey, mergedOptions);

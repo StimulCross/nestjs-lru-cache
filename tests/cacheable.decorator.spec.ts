@@ -2,6 +2,7 @@ import type { NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { CACHE_INSTANCE, CACHE_INSTANCE_ID_PROPERTY, CACHE_INSTANCES_PROPERTY } from '../src/lru-cache.constants';
 import { LruCacheModule } from '../src/lru-cache.module';
+import { LruCache } from '../src/providers/lru-cache';
 import { CacheableTestService } from './test-app/cacheable-test.service';
 
 describe('Cacheable decorator test suite', () => {
@@ -52,5 +53,6 @@ describe('Cacheable decorator test suite', () => {
 	test('Cacheable instance must has DI injected cache service', async () => {
 		const cacheableTestService = await app.resolve(CacheableTestService);
 		expect(cacheableTestService).toHaveProperty(CACHE_INSTANCE);
+		expect(cacheableTestService[CACHE_INSTANCE]).toBeInstanceOf(LruCache);
 	});
 });
