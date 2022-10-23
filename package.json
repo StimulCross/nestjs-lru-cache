@@ -7,7 +7,7 @@
 	},
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"repository": "git@github.com:StimulCross/nestjs-memory-cache.git",
+	"repository": "git@github.com:StimulCross/nestjs-lru-cache.git",
 	"author": "Stimul Cross <stimulcross@gmail.com>",
 	"license": "MIT",
 	"files": [
