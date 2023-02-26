@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import type { CachedDecoratorOptions } from '../interfaces/cached-decorator-options.interface';
 import type { CacheArgumentOptions } from '../interfaces/cache-argument-options.interface';
-import { CACHE_INSTANCE, CACHE_INSTANCE_ID_PROPERTY } from '../lru-cache.constants';
+import { CACHE_INSTANCE, CACHE_INSTANCE_ID_PROPERTY } from '../constants';
 import { isObject } from '../utils/is-object';
 import { LruCache } from '../providers/lru-cache';
 import { wrapCacheKey } from '../utils/wrap-cache-key';

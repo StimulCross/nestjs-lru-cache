@@ -7,7 +7,7 @@ import type {
 	LruCacheModuleOptions,
 	LruCacheOptionsFactory
 } from './interfaces/lru-cache-options.interface';
-import { LRU_CACHE, LRU_CACHE_OPTIONS } from './lru-cache.constants';
+import { LRU_CACHE, LRU_CACHE_OPTIONS } from './constants';
 import { LruCache } from './providers/lru-cache';
 
 /**

@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import type { NestApplication } from '@nestjs/core';
 import * as LRUCache from 'lru-cache';
 import type { INestApplication } from '@nestjs/common';
-import { LRU_CACHE, LRU_CACHE_OPTIONS } from '../src/lru-cache.constants';
+import { LRU_CACHE, LRU_CACHE_OPTIONS } from '../src/constants';
 import { LruCacheModule } from '../src/lru-cache.module';
 import type { LruCacheOptions } from '../src/interfaces/lru-cache-options.interface';
 import { LruCache } from '../src/providers/lru-cache';

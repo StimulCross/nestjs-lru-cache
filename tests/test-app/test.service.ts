@@ -1,5 +1,5 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { CACHE_INSTANCE_ID_PROPERTY, CACHE_INSTANCES_PROPERTY } from '../../src/lru-cache.constants';
+import { CACHE_INSTANCE_ID_PROPERTY, CACHE_INSTANCES_PROPERTY } from '../../src/constants';
 import { Cached } from '../../src/decorators/cached.decorator';
 import { CachedAsync } from '../../src/decorators/cached-async.decorator';
 import { CacheArgumentOptions } from '../../src/interfaces/cache-argument-options.interface';

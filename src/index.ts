@@ -1,4 +1,4 @@
-export { LRU_CACHE } from './lru-cache.constants';
+export { LRU_CACHE } from './constants';
 export {
 	LruCacheOptions,
 	LruCacheAsyncModuleOptions,

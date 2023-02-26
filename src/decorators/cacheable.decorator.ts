@@ -1,4 +1,4 @@
-import { CACHE_INSTANCE_ID_PROPERTY, CACHE_INSTANCES_PROPERTY } from '../lru-cache.constants';
+import { CACHE_INSTANCE_ID_PROPERTY, CACHE_INSTANCES_PROPERTY } from '../constants';
 
 /**
  * Marks a class as cacheable.

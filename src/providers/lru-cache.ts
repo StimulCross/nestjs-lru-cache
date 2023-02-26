@@ -11,7 +11,7 @@ import type {
 	SizeCalculator
 } from 'lru-cache';
 import * as LRUCache from 'lru-cache';
-import { LRU_CACHE } from '../lru-cache.constants';
+import { LRU_CACHE } from '../constants';
 
 /**
  * LRU cache service.
