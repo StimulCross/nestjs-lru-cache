@@ -1,6 +1,6 @@
 # NestJS LRU Cache
 
-> **WARNING:** Although this library has been automatically (100% covered) and manually tested, it may still have fundamental design issues. Use it at your own risk.
+> **WARNING:** Although this library has been automatically (100% covered) and manually tested, it may still have fundamental design issues.
 
 ### Table of Contents
 
@@ -38,9 +38,9 @@ This is a NestJS wrapper around popular [lru-cache](https://github.com/isaacs/no
 
 This cache module focuses on the LRU caching strategy where the least used entries are removed from the cache.
 
-Specify a max number of the most recently used items that you want to keep, and this cache will keep that many of the most recently accessed items.
+Specify a max number of the most recently used entries that you want to keep, and this cache will keep that many of the most recently accessed entries.
 
-Although this library supports TTL, it does not make strong TTL guarantees. There is no preemptive pruning of expired items by default, but you _may_ set a TTL on the cache or on a single set. If you do so, it will treat expired items as missing, and delete them when fetched. If you are more interested in TTL caching than LRU caching, consider using [nestjs-ttl-cache](https://github.com/stimulcross/nestjs-ttl-cache) - a NestJS wrapper for [@isaacs/ttlcache](https://github.com/isaacs/ttlcache) library.
+Although this library supports TTL, it does not make strong TTL guarantees. There is no preemptive pruning of expired entries by default, but you _may_ set a TTL on the cache or on a single set. If you do so, it will treat expired entries as missing, and delete them when fetched. If you are more interested in TTL caching than LRU caching, consider using [nestjs-ttl-cache](https://github.com/stimulcross/nestjs-ttl-cache) - a NestJS wrapper for [@isaacs/ttlcache](https://github.com/isaacs/ttlcache) library.
 
 ## General Usage
 
@@ -147,26 +147,11 @@ export class AnyCustomProvider {
 }
 ```
 
-You can also inject the **original** cache instance provided by [lru-cache](https://github.com/isaacs/node-lru-cache) library using `LRU_CACHE` token:
-
-```ts
-import { Inject, Injectable } from '@nestjs/common';
-import { LRU_CACHE } from 'nestjs-lru-cache';
-import * as LRUCache from 'lru-cache';
-
-@Injectable()
-export class AnyCustomProvider {
-	constructor(@Inject(LRU_CACHE) private readonly _cache: LRUCache) {}
-}
-```
-
 See [API](#api) section below for the cache usage information.
 
 ## Options
 
 ```ts
-import { Disposer, SizeCalculator, Fetcher } from 'lru-cache';
-
 interface LruCacheOptions<K = any, V = any> {
 	max?: number;
 	maxSize?: number;
@@ -192,203 +177,11 @@ interface LruCacheOptions<K = any, V = any> {
 }
 ```
 
-Either `register` or `registerAsync` (its factories) should provide the following cache options:
-
-> **NOTE:** At least one of `max`, `maxSize`, or `ttl` is required.
-
-### `max`
-
-The maximum number of items that remain in the cache (assuming no TTL pruning or explicit deletions). Note that fewer items may be stored if size calculation is used, and maxSize is exceeded. This must be a positive finite integer.
-
-**It is strongly recommended to set `max` to prevent unbounded growth of the cache**. See [Storage Bounds Safety](https://github.com/isaacs/node-lru-cache/blob/main/README.md#storage-bounds-safety) notes from the original maintainer.
-
-### `maxSize`
-
-Set to a positive integer to track the sizes of items added to the cache, and automatically evict items in order to stay below this size. Note that this may result in fewer than max items being stored.
-
-Attempting to add an item to the cache whose calculated size is greater that this amount will be a no-op. The item will not be cached, and no other items will be evicted.
-
-Optional, must be a positive integer if provided.
-
-Sets `maxEntrySize` to the same value, unless a different value is provided for `maxEntrySize`.
-
-Even if size tracking is enabled, **it is strongly recommended to set `max` to prevent unbounded growth of the cache**. See [Storage Bounds Safety](https://github.com/isaacs/node-lru-cache/blob/main/README.md#storage-bounds-safety) notes from the original maintainer.
-
-### `maxEntrySize`
-
-Set to a positive integer to track the sizes of items added to the cache, and prevent caching any item over a given size. Attempting to add an item whose calculated size is greater than this amount will be a no-op. The item will not be cached, and no other items will be evicted.
-
-Optional, must be a positive integer if provided. Defaults to the value of maxSize if provided.
-
-### `sizeCalculation`
-
-Function used to calculate the size of stored items. If you're storing strings or buffers, then you probably want to do something like `n => n.length`. The item is passed as the first argument, and the key is passed as the second argument.
-
-This may be overridden by passing an options object to `set()`.
-
-Requires `maxSize` to be set. If the resulting calculated size is greater than `maxSize`, then the item will not be added to the cache.
-
-### `fetchMethod`
-
-Function that is used to make background asynchronous fetches. Called with `fetchMethod(key, staleValue, { signal, options, context })`. May return a Promise.
-
-If `fetchMethod` is not provided, then `fetch(key)` is equivalent to `Promise.resolve(cache.get(key))`.
-
-The `signal` object is an `AbortSignal` if that's available in the global object, otherwise it's a pretty close polyfill.
-
-If at any time, `signal.aborted` is set to `true`, or if the `signal.onabort` method is called, or if it emits an `'abort'` event which you can listen to with `addEventListener`, then that means that the fetch should be abandoned. This may be passed along to async functions aware of AbortController/AbortSignal behavior.
-
-The `options` object is a union of the options that may be provided to `set()` and `get()`. If they are modified, then that will result in modifying the settings to `set()` when the value is resolved. For example, a DNS cache may update the TTL based on the value returned from a remote DNS server by changing `options.ttl` in the `fetchMethod`.
-
-### `fetchContext`
-
-Arbitrary data that can be passed to the `fetchMethod` as the `context` option.
-
-Note that this will only be relevant when the `fetch()` call needs to call `fetchMethod()`. Thus, any data which will meaningfully vary the fetch response needs to be present in the key. This is primarily intended for including `x-request-id` headers and the like for debugging purposes, which do not affect the `fetchMethod()` response.
-
-### `noDeleteOnFetchRejection`
-
-If a `fetchMethod` throws an error or returns a rejected promise, then by default, any existing stale value will be removed from the cache.
-
-If `noDeleteOnFetchRejection` is set to `true`, then this behavior is suppressed, and the stale value remains in the cache in the case of a rejected `fetchMethod`.
-
-This is important in cases where a `fetchMethod` is only called as a background update while the stale value is returned, when `allowStale` is used.
-
-This may be set in calls to `fetch()`, or defaulted on the constructor.
-
-### `dispose`
-
-Function that is called on items when they are dropped from the cache, as `dispose(value, key, reason)`.
-
-This can be handy if you want to close file descriptors or do other cleanup tasks when items are no longer stored in the cache.
-
-NOTE: It is called before the item has been fully removed from the cache, so if you want to put it right back in, you need to wait until the next tick. If you try to add it back in during the `dispose()` function call, it will break things in subtle and weird ways.
-
-Unlike several other options, this may not be overridden by passing an option to `set()`, for performance reasons. If disposal functions may vary between cache entries, then the entire list must be scanned on every cache swap, even if no disposal function is in use.
-
-The `reason` will be one of the following strings, corresponding to the reason for the item's deletion:
-
--   `evict` Item was evicted to make space for a new addition
--   `set` Item was overwritten by a new value
--   `delete` Item was removed by explicit `delete(key)` or by calling `clear()`, which deletes everything.
-
-The `dispose()` method is _not_ called for canceled calls to `fetchMethod()`. If you wish to handle evictions, overwrites, and deletes of in-flight asynchronous fetches, you must use the `AbortSignal` provided.
-
-Optional, must be a function.
-
-### `disposeAfter`
-
-The same as `dispose`, but called after the entry is completely removed and the cache is once again in a clean state.
-
-It is safe to add an item right back into the cache at this point. However, note that it is very easy to inadvertently create infinite recursion in this way.
-
-The `disposeAfter()` method is _not_ called for canceled calls to `fetchMethod()`. If you wish to handle evictions, overwrites, and deletes of in-flight asynchronous fetches, you must use the `AbortSignal` provided.
-
-### `noDisposeOnSet`
-
-Set to `true` to suppress calling the `dispose()` function if the entry key is still accessible within the cache.
-
-This may be overridden by passing an options object to `set()`.
-
-Boolean, default `false`. Only relevant if `dispose` or `disposeAfter` options are set.
-
-### `ttl`
-
-Max time to live for items before they are considered stale. Note that stale items are NOT preemptively removed by default, and MAY live in the cache, contributing to its LRU max, long after they have expired.
-
-Also, as this cache is optimized for LRU/MRU operations, some staleness/TTL checks will reduce performance.
-
-This is not primarily a TTL cache, and does not make strong TTL guarantees. There is no pre-emptive pruning of expired items, but you may set a TTL on the cache, and it will treat expired items as missing when they are fetched, and delete them.
-
-Optional, but must be a positive integer in ms if specified.
-
-This may be overridden by passing an options object to `set()`.
-
-Even if TTL tracking is enabled, it is strongly recommended to set a max to prevent unbounded growth of the cache. See "Storage Bounds Safety" below.
-
-If TTL tracking is enabled, and `max` and `maxSize` are not set, and `ttlAutopurge` is not set, then a warning will be emitted cautioning about the potential for unbounded memory consumption.
-
-### `noUpdateTTL`
-
-Boolean flag to tell the cache to not update the TTL when setting a new value for an existing key (ie, when updating a value rather than inserting a new value). Note that the TTL value is always set (if provided) when adding a new entry into the cache.
-
-This may be passed as an option to `set()`.
-
-Boolean, default `false`.
-
-### `ttlResolution`
-
-Minimum amount of time in ms in which to check for staleness. Defaults to `1`, which means that the current time is checked at most once per millisecond.
-
-Set to `0` to check the current time every time staleness is tested.
-
-Note that setting this to a higher value _will_ improve performance somewhat while using TTL tracking, albeit at the expense of keeping stale items around a bit longer than intended.
-
-### `ttlAutopurge`
-
-Preemptively remove stale items from the cache.
-
-Note that this may _significantly_ degrade performance, especially if the cache is storing a large number of items. It is almost always best to just leave the stale items in the cache, and let them fall out as new items are added.
-
-Note that this means that `allowStale` is a bit pointless, as stale items will be deleted almost as soon as they expire.
-
-Use with caution!
-
-Default: `false`
-
-### `allowStale`
-
-By default, if you set TTL, it'll only delete stale items from the cache when you `get(key)`. That is, it's not preemptively pruning items.
-
-If you set `allowStale:true`, it'll return the stale value as well as deleting it. If you don't set this, then it'll return `undefined` when you try to get a stale entry.
-
-Note that when a stale entry is fetched, even if it is returned due to `allowStale` being set, it is removed from the cache immediately. You can immediately put it back in the cache if you wish, thus resetting the TTL.
-
-This may be overridden by passing an options object to `get()`. The `has()` method will always return `false` for stale items.
-
-Boolean, default `false`, only relevant if `ttl` is set.
-
-### `noDeleteOnStaleGet`
-
-When using time-expiring entries with `ttl`, by default stale items will be removed from the cache when the key is accessed with `get()`.
-
-Setting `noDeleteOnStaleGet` to `true` will cause stale items to remain in the cache, until they are explicitly deleted with `delete(key)`, or retrieved with `noDeleteOnStaleGet` set to `false`.
-
-This may be overridden by passing an options object to `get()`.
-
-Boolean, default `false`, only relevant if `ttl` is set.
-
-### `updateAgeOnGet`
-
-When using time-expiring entries with `ttl`, setting this to `true` will make each item's age reset to `0` whenever it is retrieved from cache with `get()`, causing it to not expire. (It can still fall out of cache based on recency of use, of course.)
-
-    This may be overridden by passing an options object to `get()`.
-
-    Boolean, default `false`, only relevant if `ttl` is set.
-
-### `updateAgeOnHas`
-
-When using time-expiring entries with `ttl`, setting this to `true` will make each item's age reset to `0` whenever its presence in the cache is checked with `has()`, causing it to not expire. (It can still fall out of cache based on recency of use, of course.)
-
-This may be overridden by passing an options object to `has()`.
-
-Boolean, default `false`, only relevant if `ttl` is set.
+> **TIP:** Read the detailed description of each option in the original [lru-cache repository](https://github.com/isaacs/node-lru-cache/blob/main/README.md#options).
 
 ## API
 
 ```ts
-import {
-	Disposer,
-	Entry,
-	Fetcher,
-	FetcherOptions,
-	GetOptions,
-	HasOptions,
-	PeekOptions,
-	SetOptions,
-	SizeCalculator
-} from 'lru-cache';
-
 interface LruCache<K = any, V = any> {
 	readonly max: number;
 	readonly maxSize: number;
@@ -409,217 +202,32 @@ interface LruCache<K = any, V = any> {
 	readonly size: number;
 
 	has(key: K, options?: HasOptions): boolean;
-
-	get<T = unknown>(key: K, options?: GetOptions): T | undefined;
-
-	peek<T = unknown>(key: K, options?: PeekOptions): T | undefined;
-
+	get<T = V>(key: K, options?: GetOptions): T | undefined;
+	peek<T = V>(key: K, options?: PeekOptions): T | undefined;
 	set(key: K, value: V, ttl?: number): this;
-
 	set(key: K, value: V, options?: SetOptions<K, V>): this;
-
 	delete(key: K): boolean;
-
 	clear(): void;
-
 	pop(): V | undefined;
-
 	purgeStale(): boolean;
-
-	find<T = V>(
-		callbackFn: (value: V, key: K, cache: LruCache<K, V>) => boolean | undefined | void,
-		options?: GetOptions
-	): T;
-
-	forEach<T = this>(callbackFn: (this: T, value: V, key: K, cache: LruCache<K, V>) => void, thisArg?: T): void;
-
-	rforEach<T = this>(callbackFn: (this: T, value: V, key: K, cache: LruCache<K, V>) => void, thisArg?: T): void;
-
+	find<T = V>(callbackFn: (value: V, key: K, cache: this) => boolean | undefined | void, options?: GetOptions): T;
+	forEach<T = this>(callbackFn: (this: T, value: V, key: K, cache: this) => void, thisArg?: T): void;
+	rforEach<T = this>(callbackFn: (this: T, value: V, key: K, cache: this) => void, thisArg?: T): void;
 	getRemainingTTL(key: K): number;
-
-	keys(): Generator<K>;
-
-	rkeys(): Generator<K>;
-
-	values(): Generator<V>;
-
-	rvalues(): Generator<V>;
-
+	keys(): Generator<K, void, void>;
+	rkeys(): Generator<K, void, void>;
+	values(): Generator<V, void, void>;
+	rvalues(): Generator<V, void, void>;
 	entries(): Generator<[K, V]>;
-
 	rentries(): Generator<[K, V]>;
-
 	dump(): Array<[K, Entry<V>]>;
-
 	load(cacheEntries: ReadonlyArray<[K, Entry<V>]>): void;
-
 	fetch<ExpectedValue = V>(key: K, options?: FetcherOptions<K, V>): Promise<ExpectedValue | undefined>;
-
 	[Symbol.iterator](): Iterator<[K, V]>;
 }
 ```
 
-All [options](#options) are exposed as public read only members on the cache provider.
-
-### `size`
-
-The total number of items held in the cache at the current moment.
-
-### `has(key, { allowStale })`
-
-Check if a key is in the cache, without updating the recency of use. Age is updated if `updateAgeOnHas` is set to `true` in either the options or the constructor.
-
-Will return `false` if the item is stale, even though it is technically in the cache.
-
-### `get(key, { allowStale, updateAgeOnGet, noDeleteOnStaleGet })`
-
-Returns a value from the cache.
-
-Will update the recency of the cache entry found.
-
-If the key is not found, `get()` will return undefined. This can be confusing when setting values specifically to undefined, as in `set(key, undefined)`. Use `has()` to determine whether a key is present in the cache at all.
-
-### `peek(key, { allowStale })`
-
-Like `get()` but doesn't update recency or delete stale items.
-
-Returns `undefined` if the item is stale, unless `allowStale` is set either on the cache or in the options object.
-
-### `set(key, value, ttl)`
-
-### `set(key, value, { ttl, size, sizeCalculation, start, noDisposeOnSet, noUpdateTTL })`
-
-Add a value to the cache.
-
-The third argument can be either number TTL or options object.
-
-Optional options object may contain `ttl` and `sizeCalculation` as described above, which default to the settings on the cache object.
-
-If `start` is provided, then that will set the effective start time for the TTL calculation. Note that this must be a previous value of `performance.now()` if supported, or a previous value of `Date.now()` if not.
-
-Options object my also include `size`, which will prevent calling the `sizeCalculation` function and just use the specified number if it is a positive integer, and `noDisposeOnSet` which will prevent calling a `dispose` function in the case of overwrites.
-
-If the `size` (or return value of `sizeCalculation`) is greater than `maxSize`, then the item will not be added to the cache.
-
-Will update the recency of the entry.
-
-Returns the cache service itself.
-
-`ttl` and `noUpdateTTL` optionally override defaults on the module [options](#options).
-
-Returns the cache object itself.
-
-### `delete(key)`
-
-Deletes a key out of the cache.
-
-Returns `true` if the key was deleted, `false` otherwise.
-
-### `clear()`
-
-Clear the cache entirely, throwing away all values.
-
-### `keys()`
-
-Return a generator yielding the keys in the cache, in order from most recently used to least recently used.
-
-```ts
-for (const key of cacheService.keys()) {
-	// ...
-}
-```
-
-### `rkeys()`
-
-Return a generator yielding the keys in the cache, in order from least recently used to most recently used.
-
-### `values()`
-
-Return a generator yielding the values in the cache, in order from most recently used to least recently used.
-
-```ts
-for (const value of cacheService.values()) {
-	// ...
-}
-```
-
-### `rvalues()`
-
-Return a generator yielding the values in the cache, in order from least recently used to most recently used.
-
-### `entries()`
-
-Return a generator yielding `[key, value]` pairs, in order from most recently used to least recently used.
-
-```ts
-for (const [key, value] of cacheService.entries()) {
-	// ...
-}
-```
-
-### `rentries()`
-
-Return a generator yielding `[key, value]` pairs, in order from least recently used to most recently used.
-
-### `find(fn, { allowStale, updateAgeOnGet, noDeleteOnStaleGet })`
-
-Find a value for which the supplied fn method returns a truthy value, similar to `Array.find()`.
-
-`fn` is called as `fn(value, key, cache)`.
-
-The options are applied to the resulting `get()` of the item found.
-
-### `dump()`
-
-Return an array of `[key, entry]` objects which can be passed to `load()`.
-
-The `start` fields are calculated relative to a portable `Date.now()` timestamp, even if `performance.now()` is available.
-
-Stale entries are always included in the dump, even if `allowStale` is `false`.
-
-Note: this returns an actual array, not a generator, so it can be more easily passed around.
-
-### `load(entries)`
-
-Reset the cache and load in the items in `entries` in the order listed. Note that the shape of the resulting cache may be different if the same options are not used in both caches.
-
-The `start` fields are assumed to be calculated relative to a portable `Date.now()` timestamp, even if `performance.now()` is available.
-
-### `purgeStale()`
-
-Delete any stale entries. Returns `true` if anything was removed, `false` otherwise.
-
-### `getRemainingTTL(key)`
-
-Return the number of milliseconds left in the item's TTL. If item is not in cache, returns `0`. Returns `Infinity` if item is in cache without a defined TTL.
-
-### `forEach(fn, thisp)`
-
-Call the `fn` function with each set of `fn(value, key, cache)` in the LRU cache, from most recent to least recently used.
-
-Does not affect recency of use.
-
-If `thisp` is provided, function will be called in the this-context of the provided object.
-
-### `rforEach(fn, thisp)`
-
-Same as `forEach(fn, thisp?)`, but in order from least recently used to most recently used.
-
-### `pop()`
-
-Evict the least recently used item, returning its value.
-
-Returns `undefined` if cache is empty.
-
-### `Symbol.iterator`
-
-The cache service supports iterations over itself.
-
-```ts
-for (const [key, value] of cacheService) {
-	// ...
-}
-```
+> **TIP:** Read the detailed description of the API in the original [lru-cache repository](https://github.com/isaacs/node-lru-cache/blob/main/README.md#api).
 
 ## Decorators
 
@@ -647,7 +255,7 @@ anyCustomProvider.getRandomNumber(); // -> 0.06753652490209194
 
 // Without @Cached() decorator:
 anyCustomProvider.getRandomNumber(); // -> 0.24774185142387684
-anyCustomProvider.getRandomNumber(); // -> 0.7533487702318598
+anyCustomProvider.getRandomNumber(); // -> 0.75334877023185987
 ```
 
 This will work as expected if you have the single instance of the class. But if you have multiple instances of the same class (e.g. `TRANSIENT` or `REQUEST` scoped), **they will use the shared cache by default**. In order to separate them, you need to apply the `@Cacheable` decorator on the class.
@@ -776,7 +384,8 @@ interface CachedDecoratorOptions<K = any, V = any> {
 	useSharedCache?: boolean;
 	useArgumentOptions?: boolean;
 	ttl?: number;
-	sizeCalculation: (value: V, key: K) => number;
+	size?: number;
+	sizeCalculation?: (value: V, key: K) => number;
 	noDisposeOnSet?: boolean;
 	noUpdateTTL?: boolean;
 	updateAgeOnHas?: boolean;
@@ -794,12 +403,13 @@ The `@Cached` decorator can accept options object as the first argument instead 
 -   `hashFunction` - A function that accepts the same parameters as the decorated method and returns a string that will be appended to the generated cache key. You can specify it as the first argument or use this property in the options object.
 -   `useSharedCache` - Whether the decorated method should use shared cache across multiple class instances, even if the class is decorated with `@Cacheable` decorator. Defaults to `false`.
 -   `useArgumentOptions` - Makes the decorator use [argument options](#argument-options) passed as the last argument to the decorated method to control caching behavior for **one specific method call**. See below for more information. Defaults to `false`.
--   `ttl` - Max time to live for items before they are considered stale.
--   `sizeCalculation` - Function used to calculate the size of stored entries. If you're storing strings or buffers, then you probably want to do something like `n => n.length`. The item is passed as the first argument, and the key is passed as the second argument.
+-   `ttl` - Max time to live for entries before they are considered stale.
+-   `size` - The size of entry to add. Prevents calling the `sizeCalculation` function and just use the specified number if it is a positive integer.
+-   `sizeCalculation` - Function used to calculate the size of stored entries. If you're storing strings or buffers, then you probably want to do something like `n => n.length`. The entry is passed as the first argument, and the key is passed as the second argument.
 -   `noDisposeOnSet` - Whether the `dispose()` function should be called if the entry key is still accessible within the cache.
 -   `noUpdateTTL` - Whether to not update the TTL when overwriting an existing entry.
--   `updateAgeOnGet` - Whether the age of an entry should be updated on `get()`.
--   `updateAgeOnHas` - Whether the age of an entry should be updated on `has()`.
+-   `updateAgeOnGet` - Whether the age of an entry should be updated on `get()` (when the decorator gets the cached result of the decorated getter/method).
+-   `updateAgeOnHas` - Whether the age of an entry should be updated on `has()` (when the decorator checks if the decorated getter/method has a cached result).
 -   `noDeleteOnStaleGet` - Setting to `true` will cause stale entries to remain in the cache, until they are explicitly deleted with `delete(key)`, or retrieved with `noDeleteOnStaleGet` set to `false`.
 
 The example below shows how you can apply some cache options at the method level.
@@ -880,7 +490,7 @@ anyCustomProvider.getRandomNumberAsync(); // -> Promise { 0.24774185142387612 }
 anyCustomProvider.getRandomNumberAsync(); // -> Promise { 0.24774185142387612 }
 
 // Without @CachedAsync() decorator
-// Not awaited calls return new promises for each call.
+// Not awaited calls return a new promise for each call.
 anyCustomProvider.getRandomNumberAsync(); // -> Promise { 0.01035534046752562 }
 anyCustomProvider.getRandomNumberAsync(); // -> Promise { 0.19166009286482677 }
 anyCustomProvider.getRandomNumberAsync(); // -> Promise { 0.04037471223786249 }
@@ -905,6 +515,7 @@ interface CachedAsyncDecoratorOptions<K = any, V = any> {
 	cachePromise?: boolean;
 	cachePromiseResult?: boolean;
 	ttl?: number;
+	size?: number;
 	sizeCalculation?: SizeCalculator<K, V>;
 	noDisposeOnSet?: boolean;
 	noUpdateTTL?: boolean;
@@ -942,13 +553,13 @@ Some options listed below override similar [options](#cached-options) in the dec
 
 -   `returnCached` - Whether to return the cached value. If set to `false`, the original method will be called even if the cached result is available in the cache. The new value replaces the cached one as usual. Defaults to `true`.
 -   `useSharedCache` - Whether a specific method call should use the shared cache across multiple class instances, even if [@Cacheable](#cacheable) decorator has been applied to the class. Defaults to the value specified in the [@Cached decorator options](#cached-options).
--   `ttl` - Max time to live for items before they are considered stale.
+-   `ttl` - Max time to live for entries before they are considered stale.
 -   `size` - The size of entry to add. Prevents calling the `sizeCalculation` function and just use the specified number if it is a positive integer.
--   `sizeCalculation` - Function used to calculate the size of stored entries. If you're storing strings or buffers, then you probably want to do something like `n => n.length`. The item is passed as the first argument, and the key is passed as the second argument.
+-   `sizeCalculation` - Function used to calculate the size of stored entries. If you're storing strings or buffers, then you probably want to do something like `n => n.length`. The entry is passed as the first argument, and the key is passed as the second argument.
 -   `noDisposeOnSet` - Whether the `dispose()` function should be called if the entry key is still accessible within the cache.
 -   `noUpdateTTL` - Whether to not update the TTL when overwriting an existing entry.
--   `updateAgeOnGet` - Whether the age of an entry should be updated on `get()`.
--   `updateAgeOnHas` - Whether the age of an entry should be updated on `has()`.
+-   `updateAgeOnGet` - Whether the age of an entry should be updated on `get()` (when the decorator gets the cached result of the decorated getter/method).
+-   `updateAgeOnHas` - Whether the age of an entry should be updated on `has()` (when the decorator checks if the decorated getter/method has a cached result).
 -   `noDeleteOnStaleGet` - Setting to `true` will cause stale entries to remain in the cache, until they are explicitly deleted with `delete(key)`, or retrieved with `noDeleteOnStaleGet` set to `false`.
 
 To be able to use argument options, you _must_ set `useArgumentOptions` to `true` in the decorator options. Otherwise, they will be ignored.
@@ -960,12 +571,12 @@ import { Cached, CachedAsync, CacheArgumentOptions } from 'nestjs-lru-cache';
 @Injectable()
 export class AnyCustomProvider {
 	@Cached({ ttl: 5000, useArgumentOptions: true })
-	public getRandomNumber(options?: CacheArgumentOptions): number {
+	public getRandomNumber(_options?: CacheArgumentOptions): number {
 		return Math.random();
 	}
 
 	@CachedAsync({ ttl: 5000, useArgumentOptions: true })
-	public async getUserById(id: number, options?: CachedAsyncArgumentOptions): Promise<User> {
+	public async getUserById(id: number, _options?: CacheArgumentOptions): Promise<User> {
 		// ...
 	}
 }
@@ -982,7 +593,7 @@ anyCustomProvider.getRandomNumber();
 anyCustomProvider.getRandomNumber();
 // ->  0.19166009286482677
 
-// And you can pass `returnCached` option to ignore
+// And you can pass `returnCached: false` to ignore
 // the cached value and get a new one:
 anyCustomProvider.getRandomNumber({ returnCached: false });
 // ->  0.24774185142387612
