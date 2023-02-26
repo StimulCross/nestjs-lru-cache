@@ -43,7 +43,7 @@ export class LruCacheModule {
 	 *
 	 * @param options LRU cache async options.
 	 */
-	public static async registerAsync(options: LruCacheAsyncModuleOptions): Promise<DynamicModule> {
+	public static registerAsync(options: LruCacheAsyncModuleOptions): DynamicModule {
 		return {
 			global: options.isGlobal,
 			imports: options.imports ?? [],
