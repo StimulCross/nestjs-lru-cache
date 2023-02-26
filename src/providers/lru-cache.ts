@@ -11,6 +11,7 @@ import { LruCacheOptions } from '../interfaces';
  */
 @Injectable()
 export class LruCache<K = any, V = any> extends LRUCache<K, V> {
+	/** @internal */
 	constructor(@Inject(LRU_CACHE_OPTIONS) private readonly _options: LruCacheOptions) {
 		super(_options);
 	}
