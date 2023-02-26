@@ -1,5 +1,5 @@
-import type { ModuleMetadata, Type } from '@nestjs/common';
-import type { MaybeMaxEntrySizeLimit, SafetyBounds, SharedOptions } from 'lru-cache';
+import { type ModuleMetadata, type Type } from '@nestjs/common';
+import { type MaybeMaxEntrySizeLimit, type SafetyBounds, type SharedOptions } from 'lru-cache';
 
 /**
  * Additional module options.

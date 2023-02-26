@@ -1,13 +1,11 @@
+import { type INestApplication } from '@nestjs/common';
+import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import type { NestApplication } from '@nestjs/core';
 import * as LRUCache from 'lru-cache';
-import type { INestApplication } from '@nestjs/common';
-import { LRU_CACHE, LRU_CACHE_OPTIONS } from '../src/constants';
-import { LruCacheModule } from '../src/lru-cache.module';
-import type { LruCacheOptions } from '../src/interfaces/lru-cache-options.interface';
-import { LruCache } from '../src/providers/lru-cache';
-import { OptionsFactoryModule } from './test-app/options-factory/options-factory.module';
 import { OptionsFactory } from './test-app/options-factory/options-factory';
+import { OptionsFactoryModule } from './test-app/options-factory/options-factory.module';
+import { LruCacheModule, LruCache, type LruCacheOptions } from '../src';
+import { LRU_CACHE, LRU_CACHE_OPTIONS } from '../src/constants';
 
 describe('LRU cache module test suite', () => {
 	describe('LRU cache options', () => {

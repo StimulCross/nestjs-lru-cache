@@ -1,13 +1,12 @@
-import type { DynamicModule, Provider } from '@nestjs/common';
-import { Module } from '@nestjs/common';
+import { Module, type DynamicModule, type Provider } from '@nestjs/common';
 import * as LRUCache from 'lru-cache';
-import type {
-	LruCacheAsyncModuleOptions,
-	LruCacheOptions,
-	LruCacheModuleOptions,
-	LruCacheOptionsFactory
-} from './interfaces/lru-cache-options.interface';
 import { LRU_CACHE, LRU_CACHE_OPTIONS } from './constants';
+import {
+	type LruCacheAsyncModuleOptions,
+	type LruCacheOptions,
+	type LruCacheModuleOptions,
+	type LruCacheOptionsFactory
+} from './interfaces/lru-cache-options.interface';
 import { LruCache } from './providers/lru-cache';
 
 /**

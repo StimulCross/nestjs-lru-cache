@@ -1,11 +1,10 @@
+import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import type { NestApplication } from '@nestjs/core';
 import * as LRUCache from 'lru-cache';
-import type { Disposer, Fetcher } from 'lru-cache';
+import { type Disposer, type Fetcher } from 'lru-cache';
 import { sizeof } from 'sizeof';
-import { LruCacheModule } from '../src';
-import { LruCache } from '../src/providers/lru-cache';
 import { sleep } from './test-app/utils/sleep';
+import { LruCacheModule, LruCache } from '../src';
 
 describe('LRU cache provider test suite', () => {
 	describe('LRU cache options', () => {

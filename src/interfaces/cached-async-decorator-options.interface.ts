@@ -1,4 +1,4 @@
-import type { GetOptions, SetOptions, SizeCalculator } from 'lru-cache';
+import { type GetOptions, type SetOptions, type SizeCalculator } from 'lru-cache';
 
 /**
  * Options for {@link CachedAsync} decorator.

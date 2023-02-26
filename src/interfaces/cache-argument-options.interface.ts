@@ -1,4 +1,4 @@
-import type { GetOptions, HasOptions, SetOptions, SizeCalculator } from 'lru-cache';
+import { type GetOptions, type HasOptions, type SetOptions, type SizeCalculator } from 'lru-cache';
 
 /**
  * Additional cache options to pass as the last argument to the method decorated with {@link Cached} /

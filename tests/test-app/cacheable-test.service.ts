@@ -1,9 +1,6 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { Cacheable } from '../../src/decorators/cacheable.decorator';
-import { Cached } from '../../src/decorators/cached.decorator';
+import { Cacheable, Cached, CachedAsync, type CacheArgumentOptions } from '../../src';
 import { CACHE_INSTANCE_ID_PROPERTY, CACHE_INSTANCES_PROPERTY } from '../../src/constants';
-import { CacheArgumentOptions } from '../../src/interfaces/cache-argument-options.interface';
-import { CachedAsync } from '../../src';
 
 @Injectable({ scope: Scope.TRANSIENT })
 @Cacheable()

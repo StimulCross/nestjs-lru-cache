@@ -1,14 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type {
-	Disposer,
-	Entry,
-	Fetcher,
-	FetchOptions,
-	GetOptions,
-	HasOptions,
-	PeekOptions,
-	SetOptions,
-	SizeCalculator
+import {
+	type Disposer,
+	type Entry,
+	type Fetcher,
+	type FetchOptions,
+	type GetOptions,
+	type HasOptions,
+	type PeekOptions,
+	type SetOptions,
+	type SizeCalculator
 } from 'lru-cache';
 import * as LRUCache from 'lru-cache';
 import { LRU_CACHE } from '../constants';
