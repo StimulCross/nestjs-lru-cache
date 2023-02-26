@@ -7,7 +7,6 @@
 		"noImplicitReturns": true,
 		"importHelpers": true,
 		"strict": true,
-		"noUnusedLocals": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"downlevelIteration": true,
