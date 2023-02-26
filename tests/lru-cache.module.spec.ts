@@ -1,11 +1,10 @@
 import { type INestApplication } from '@nestjs/common';
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import * as LRUCache from 'lru-cache';
 import { OptionsFactory } from './test-app/options-factory/options-factory';
 import { OptionsFactoryModule } from './test-app/options-factory/options-factory.module';
-import { LruCacheModule, LruCache, type LruCacheOptions } from '../src';
-import { LRU_CACHE, LRU_CACHE_OPTIONS } from '../src/constants';
+import { LruCache, LruCacheModule, type LruCacheOptions } from '../src';
+import { LRU_CACHE_OPTIONS } from '../src/constants';
 
 describe('LRU cache module test suite', () => {
 	describe('LRU cache options', () => {
@@ -37,12 +36,7 @@ describe('LRU cache module test suite', () => {
 			expect(lruCacheOptions.ttl).toBe(ttl);
 		});
 
-		test('LRU cache instance should be defined', async () => {
-			const lruCache = app.get<LRUCache<unknown, unknown>>(LRU_CACHE);
-			expect(lruCache).toBeInstanceOf(LRUCache);
-		});
-
-		test('LRU cache service should be defined', async () => {
+		test('LRU cache should be defined', async () => {
 			const lruCacheProvider = app.get(LruCache);
 			expect(lruCacheProvider).toBeInstanceOf(LruCache);
 		});
@@ -62,9 +56,6 @@ describe('LRU cache module test suite', () => {
 			expect(lruCacheOptions.max).toBe(max);
 			// @ts-ignore ...
 			expect(lruCacheOptions.ttl).toBe(ttl);
-
-			const lruCache = app.get<LRUCache<unknown, unknown>>(LRU_CACHE);
-			expect(lruCache).toBeInstanceOf(LRUCache);
 
 			const lruCacheProvider = app.get(LruCache);
 			expect(lruCacheProvider).toBeInstanceOf(LruCache);

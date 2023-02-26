@@ -1,6 +1,5 @@
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import * as LRUCache from 'lru-cache';
 import { type Disposer, type Fetcher } from 'lru-cache';
 import { sizeof } from 'sizeof';
 import { sleep } from './test-app/utils/sleep';
@@ -446,7 +445,7 @@ describe('LRU cache provider test suite', () => {
 			cache.forEach((value, key, cacheInstance) => {
 				expect(key).toBe(count);
 				expect(value).toBe(count);
-				expect(cacheInstance).toBeInstanceOf(LRUCache);
+				expect(cacheInstance).toBeInstanceOf(LruCache);
 				count--;
 			});
 		});
@@ -463,7 +462,7 @@ describe('LRU cache provider test suite', () => {
 			cache.rforEach((value, key, cacheInstance) => {
 				expect(key).toBe(count);
 				expect(value).toBe(count);
-				expect(cacheInstance).toBeInstanceOf(LRUCache);
+				expect(cacheInstance).toBeInstanceOf(LruCache);
 				count++;
 			});
 		});

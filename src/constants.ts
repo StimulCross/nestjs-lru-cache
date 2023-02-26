@@ -1,10 +1,3 @@
-/**
- * Allows you to inject the original LRU cache instance using NestJS @Inject() decorator.
- *
- * @see https://github.com/isaacs/node-lru-cache/
- */
-export const LRU_CACHE = 'LruCacheToken';
-
 /** @internal */
 export const LRU_CACHE_OPTIONS = 'LruCacheOptionsToken';
 
