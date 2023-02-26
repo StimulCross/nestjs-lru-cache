@@ -24,7 +24,9 @@
 		"format:check": "prettier --check \"**/*.{ts,md,js,mjs,json}\"",
 		"format:fix": "prettier --write \"**/*.{ts,md,js,mjs,json}\"",
 		"test": "jest --config jest.config.json --runInBand",
+		"test:verbose": "jest --config jest.config.json --runInBand --verbose",
 		"test:cov": "jest --config jest.config.json --runInBand --coverage",
+		"test:cov:verbose": "jest --config jest.config.json --runInBand --coverage --verbose",
 		"prepare": "husky install"
 	},
 	"engines": {
