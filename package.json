@@ -11,9 +11,10 @@
 	"author": "Stimul Cross <stimulcross@gmail.com>",
 	"license": "MIT",
 	"files": [
-		"dist",
 		"README.md",
-		"LICENSE"
+		"LICENSE",
+		"lib",
+		"!lib/**/*.d.ts.map"
 	],
 	"scripts": {
 		"build": "tsc -p ./tsconfig.build.json",
