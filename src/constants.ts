@@ -2,10 +2,10 @@
 export const LRU_CACHE_OPTIONS = 'LRU_CACHE:OPTIONS';
 
 /** @internal */
-export const CACHE_INSTANCES_PROPERTY = '__cache_instances__';
+export const CACHE_INSTANCES_PROPERTY = '__CACHE_INSTANCES__';
 
 /** @internal */
-export const CACHE_INSTANCE_ID_PROPERTY = '__cache_instance_id__';
+export const CACHE_INSTANCE_ID_PROPERTY = '__CACHE_INSTANCE_ID__';
 
 /** @internal */
-export const CACHE_INSTANCE = '__cache__';
+export const CACHE_INSTANCE = '__CACHE__';
