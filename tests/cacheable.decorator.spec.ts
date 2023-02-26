@@ -16,11 +16,6 @@ describe('Cacheable decorator test suite', () => {
 		app = TestingModule.createNestApplication();
 
 		await app.init();
-		await app.listen(3000);
-	});
-
-	afterEach(async () => {
-		await app.close();
 	});
 
 	test('Cacheable class must has static "__cache_instances__" property', async () => {

@@ -11,20 +11,18 @@ describe('Cached async decorator test suite', () => {
 	let cache: LruCache;
 
 	beforeEach(async () => {
-		const mod = await Test.createTestingModule({
+		const TestingModule = await Test.createTestingModule({
 			imports: [LruCacheModule.register({ ttl: 1000, max: 1000 })],
 			providers: [CacheableTestService, TestService]
 		}).compile();
 
-		app = mod.createNestApplication();
+		app = TestingModule.createNestApplication();
 		cache = app.get<LruCache>(LruCache);
 
 		await app.init();
-		await app.listen(3000);
 	});
 
 	afterEach(async () => {
-		await app.close();
 		cache.clear();
 	});
 

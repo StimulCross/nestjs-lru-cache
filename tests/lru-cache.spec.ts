@@ -65,11 +65,6 @@ describe('LRU cache provider test suite', () => {
 			cache = app.get(LruCache);
 
 			await app.init();
-			await app.listen(3000);
-		});
-
-		afterAll(async () => {
-			await app.close();
 		});
 
 		afterEach(() => {
@@ -110,11 +105,6 @@ describe('LRU cache provider test suite', () => {
 			cache = app.get(LruCache);
 
 			await app.init();
-			await app.listen(3000);
-		});
-
-		afterAll(async () => {
-			await app.close();
 		});
 
 		afterEach(() => {
@@ -564,11 +554,6 @@ describe('LRU cache provider test suite', () => {
 			cache = app.get(LruCache);
 
 			await app.init();
-			await app.listen(3000);
-		});
-
-		afterAll(async () => {
-			await app.close();
 		});
 
 		afterEach(() => {
@@ -752,11 +737,6 @@ describe('LRU cache provider test suite', () => {
 			cache = app.get(LruCache);
 
 			await app.init();
-			await app.listen(3000);
-		});
-
-		afterAll(async () => {
-			await app.close();
 		});
 
 		afterEach(() => {
