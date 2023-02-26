@@ -31,7 +31,7 @@
 		"node": ">=8.3.0"
 	},
 	"dependencies": {
-		"lru-cache": "^7.14.0"
+		"lru-cache": "7.14.0"
 	},
 	"peerDependencies": {
 		"@nestjs/common": "*",
@@ -39,28 +39,28 @@
 		"reflect-metadata": "^0.1.13"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^17.0.3",
-		"@nestjs/common": "^9.1.4",
-		"@nestjs/core": "^9.1.4",
-		"@nestjs/platform-express": "^9.1.4",
-		"@nestjs/testing": "^9.1.4",
-		"@stimulcross/commitlint-config": "^1.3.0",
-		"@stimulcross/eslint-config-node": "^1.3.0",
-		"@stimulcross/eslint-config-typescript": "^1.3.0",
-		"@stimulcross/prettier-config": "^1.3.0",
-		"@types/jest": "^29.1.2",
-		"@types/node": "^18.8.5",
+		"@commitlint/cli": "^17.4.4",
+		"@nestjs/common": "^9.3.9",
+		"@nestjs/core": "^9.3.9",
+		"@nestjs/platform-express": "^9.3.9",
+		"@nestjs/testing": "^9.3.9",
+		"@stimulcross/commitlint-config": "^1.4.1",
+		"@stimulcross/eslint-config-node": "^1.4.1",
+		"@stimulcross/eslint-config-typescript": "^1.4.1",
+		"@stimulcross/prettier-config": "^1.4.1",
+		"@types/jest": "^29.4.0",
+		"@types/node": "^18.14.1",
 		"@types/sizeof": "^1.0.1",
-		"eslint": "^8.25.0",
-		"husky": "^8.0.1",
-		"jest": "^29.1.2",
-		"lint-staged": "^13.0.3",
-		"prettier": "^2.7.1",
+		"eslint": "^8.35.0",
+		"husky": "^8.0.3",
+		"jest": "^29.4.3",
+		"lint-staged": "^13.1.2",
+		"prettier": "^2.8.4",
 		"reflect-metadata": "^0.1.13",
-		"rimraf": "^3.0.2",
+		"rimraf": "^4.1.2",
 		"sizeof": "^1.0.0",
-		"ts-jest": "^29.0.3",
-		"tslib": "^2.4.0",
-		"typescript": "^4.8.4"
+		"ts-jest": "^29.0.5",
+		"tslib": "^2.5.0",
+		"typescript": "^4.9.5"
 	}
 }
