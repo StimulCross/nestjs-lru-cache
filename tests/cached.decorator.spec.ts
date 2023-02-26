@@ -5,7 +5,7 @@ import { TestService } from './test-app/test.service';
 import { sleep } from './test-app/utils/sleep';
 import { LruCacheModule, LruCache } from '../src';
 import { CACHE_INSTANCE_ID_PROPERTY } from '../src/constants';
-import { wrapCacheKey } from '../src/utils/wrap-cache-key';
+import { wrapCacheKey } from '../src/utils';
 
 describe('Cached decorator test suite', () => {
 	let app: NestApplication;

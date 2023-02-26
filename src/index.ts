@@ -1,13 +1,5 @@
 export { LRU_CACHE } from './constants';
-export { LruCacheOptions } from './interfaces/lru-cache-options.interface';
-export { CachedDecoratorOptions } from './interfaces/cached-decorator-options.interface';
-export { CachedAsyncDecoratorOptions } from './interfaces/cached-async-decorator-options.interface';
-export { CacheArgumentOptions } from './interfaces/cache-argument-options.interface';
-export { Cacheable } from './decorators/cacheable.decorator';
-export { Cached } from './decorators/cached.decorator';
-export { CachedAsync } from './decorators/cached-async.decorator';
-export { LruCache } from './providers/lru-cache';
+export * from './interfaces';
+export * from './decorators';
+export * from './providers';
 export { LruCacheModule } from './lru-cache.module';
-export { LruCacheOptionsFactory } from './interfaces/lru-cache-options-factory.interface';
-export { LruCacheAsyncModuleOptions } from './interfaces/lru-cache-module-options.interface';
-export { LruCacheModuleOptions } from './interfaces/lru-cache-module-options.interface';
