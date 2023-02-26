@@ -19,7 +19,7 @@
 	"scripts": {
 		"build": "tsc -p ./tsconfig.build.json",
 		"rebuild": "yarn clear && yarn build",
-		"clear": "rimraf dist",
+		"clear": "rimraf lib",
 		"lint": "eslint --ext js,ts .",
 		"lint:fix": "eslint --ext js,ts . --fix",
 		"format:check": "prettier --check \"**/*.{ts,md,js,mjs,json}\"",
