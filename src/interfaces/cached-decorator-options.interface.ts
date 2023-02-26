@@ -1,11 +1,11 @@
-import { type GetOptions, type SetOptions, type SizeCalculator } from 'lru-cache';
+import { type GetOptions, type HasOptions, type SetOptions, type SizeCalculator } from 'lru-cache';
 
 /**
  * Options for {@link Cached} decorator.
  *
  * These options will override similar options in {@link LruCacheOptions} for specific method or getter.
  */
-export interface CachedDecoratorOptions<K = any, V = any> extends GetOptions, Omit<SetOptions<K, V>, 'size'> {
+export interface CachedDecoratorOptions<K = any, V = any> extends HasOptions, GetOptions, SetOptions<K, V> {
 	/**
 	 * Custom hash function.
 	 *
@@ -34,6 +34,16 @@ export interface CachedDecoratorOptions<K = any, V = any> extends GetOptions, Om
 	 * @default false
 	 */
 	useSharedCache?: boolean;
+
+	/**
+	 * A value for the size of the entry, prevents calls to {@link sizeCalculation}.
+	 *
+	 * Items larger than {@link LruCacheOptions#maxEntrySize} will not be stored in the cache.
+	 *
+	 * Note that when {@link LruCacheOptions#maxSize} or {@link LruCacheOptions#maxEntrySize} are set, every item added
+	 * MUST have a size specified, either via a {@link sizeCalculation} or {@link size} options to set.
+	 */
+	size?: number;
 
 	/**
 	 * A function to calculate size of items. Useful if storing strings or buffers or other items where memory size
