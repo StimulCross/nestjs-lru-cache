@@ -12,6 +12,11 @@ async function runYarn(args) {
 	return runAndPassOutput(isWindows ? 'yarn.cmd' : 'yarn', args);
 }
 
+async function runNpm(args) {
+	const isWindows = /^win/.test(process.platform);
+	return runAndPassOutput(isWindows ? 'npm.cmd' : 'npm', args);
+}
+
 async function runAndPassOutput(cmd, args) {
 	return new Promise(resolve => {
 		const proc = spawn(cmd, args, {
@@ -45,19 +50,10 @@ await runYarn(['format:check']);
 
 const versionType = process.argv[2] ?? 'patch';
 
-await runAndPassOutput('npm', [
-	'version',
-	'--commit-hooks',
-	'false',
-	'--preid',
-	'pre',
-	versionType,
-	'-m',
-	'build: release version %v'
-]);
+await runNpm(['version', '--commit-hooks', 'false', '--preid', 'pre', versionType, '-m', 'build: release version %v']);
 
 if (versionType.startsWith('pre')) {
-	await runAndPassOutput('npm', ['publish', '--tag', 'next']);
+	await runNpm(['publish', '--tag', 'next']);
 } else {
-	await runAndPassOutput('npm', ['publish']);
+	await runNpm(['publish']);
 }
