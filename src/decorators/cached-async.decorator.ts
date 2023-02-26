@@ -11,7 +11,7 @@ function createCachedAsyncFunction(
 	options: CachedAsyncDecoratorOptions
 ) {
 	return async function (
-		this: { [CACHE_INSTANCE_ID_PROPERTY]?: number; [CACHE_INSTANCE]: LruCache },
+		this: { [CACHE_INSTANCE_ID_PROPERTY]?: number; [CACHE_INSTANCE]: LruCache<unknown, unknown> },
 		...args: unknown[]
 	) {
 		const cacheInstanceId = this[CACHE_INSTANCE_ID_PROPERTY] ? `_${this[CACHE_INSTANCE_ID_PROPERTY]}` : '';
