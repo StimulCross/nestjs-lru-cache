@@ -15,8 +15,7 @@ export class TestService {
 	}
 
 	@Cached({ ttl: 100 })
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public getRandomNumber(options?: CacheArgumentOptions): number {
+	public getRandomNumber(_options?: CacheArgumentOptions): number {
 		return Math.random();
 	}
 
@@ -26,8 +25,7 @@ export class TestService {
 	}
 
 	@Cached({ ttl: 100, useArgumentOptions: true })
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public getRandomNumberWithOptions(options?: CacheArgumentOptions): number {
+	public getRandomNumberWithOptions(_options?: CacheArgumentOptions): number {
 		return Math.random();
 	}
 
@@ -57,8 +55,7 @@ export class TestService {
 	}
 
 	@CachedAsync({ ttl: 100 })
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async getRandomNumberAsync(options?: CacheArgumentOptions): Promise<number> {
+	public async getRandomNumberAsync(_options?: CacheArgumentOptions): Promise<number> {
 		return Math.random();
 	}
 
@@ -85,8 +82,7 @@ export class TestService {
 	}
 
 	@CachedAsync({ ttl: 100, useArgumentOptions: true })
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async getRandomNumberAsyncWithOptions(options?: CacheArgumentOptions): Promise<number> {
+	public async getRandomNumberAsyncWithOptions(_options?: CacheArgumentOptions): Promise<number> {
 		return Math.random();
 	}
 

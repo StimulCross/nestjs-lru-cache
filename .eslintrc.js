@@ -47,6 +47,7 @@ module.exports = {
 		'@typescript-eslint/explicit-member-accessibility': 'off',
 		'@typescript-eslint/no-explicit-any': 'off',
 		'@typescript-eslint/unified-signatures': 'off',
-		'@typescript-eslint/naming-convention': namingConvention
+		'@typescript-eslint/naming-convention': namingConvention,
+		'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
 	}
 };
