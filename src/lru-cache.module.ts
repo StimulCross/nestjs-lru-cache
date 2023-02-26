@@ -3,10 +3,10 @@ import * as LRUCache from 'lru-cache';
 import { LRU_CACHE, LRU_CACHE_OPTIONS } from './constants';
 import {
 	type LruCacheAsyncModuleOptions,
-	type LruCacheOptions,
-	type LruCacheModuleOptions,
-	type LruCacheOptionsFactory
-} from './interfaces/lru-cache-options.interface';
+	type LruCacheModuleOptions
+} from './interfaces/lru-cache-module-options.interface';
+import { type LruCacheOptionsFactory } from './interfaces/lru-cache-options-factory.interface';
+import { type LruCacheOptions } from './interfaces/lru-cache-options.interface';
 import { LruCache } from './providers/lru-cache';
 
 /**
