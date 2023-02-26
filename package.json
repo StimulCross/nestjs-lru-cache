@@ -5,8 +5,8 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"main": "./lib/index.js",
+	"types": "./lib/index.d.ts",
 	"repository": "git@github.com:StimulCross/nestjs-lru-cache.git",
 	"author": "Stimul Cross <stimulcross@gmail.com>",
 	"license": "MIT",
