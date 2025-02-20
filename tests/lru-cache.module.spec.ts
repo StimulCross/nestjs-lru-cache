@@ -2,10 +2,10 @@ import { type INestApplication } from '@nestjs/common';
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { type LimitedByCount, type LimitedByTTL } from 'lru-cache';
-import { OptionsFactory } from './test-app/options-factory/options-factory';
-import { OptionsFactoryModule } from './test-app/options-factory/options-factory.module';
 import { LruCache, LruCacheModule, type LruCacheOptions } from '../src';
 import { LRU_CACHE_OPTIONS } from '../src/constants';
+import { OptionsFactory } from './test-app/options-factory/options-factory';
+import { OptionsFactoryModule } from './test-app/options-factory/options-factory.module';
 
 const testCacheOptions = (options: LruCacheOptions, max?: number, ttl?: number): void => {
 	expect(options).toBeDefined();

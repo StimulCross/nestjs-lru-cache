@@ -1,11 +1,11 @@
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
+import { LruCacheModule, LruCache } from '../src';
 import { CacheableTestService } from './test-app/cacheable-test.service';
 import { TestService } from './test-app/test.service';
-import { sleep } from './test-app/utils/sleep';
-import { LruCacheModule, LruCache } from '../src';
 import { CACHE_INSTANCE_ID_PROPERTY } from '../src/constants';
 import { wrapCacheKey } from '../src/utils';
+import { sleep } from './test-app/utils/sleep';
 
 describe('Cached decorator test suite', () => {
 	let app: NestApplication;

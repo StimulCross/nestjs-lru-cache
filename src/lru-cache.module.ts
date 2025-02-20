@@ -54,7 +54,7 @@ export class LruCacheModule {
 	}
 
 	private static _createOptionsProviders(options: LruCacheAsyncModuleOptions): Provider[] {
-		if (options.useExisting || options.useFactory) {
+		if (options.useExisting ?? options.useFactory) {
 			return [LruCacheModule._createOptionsProvider(options)];
 		}
 

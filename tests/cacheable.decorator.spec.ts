@@ -1,7 +1,7 @@
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
+import { LruCacheModule } from '../src';
 import { CacheableTestService } from './test-app/cacheable-test.service';
-import { LruCacheModule, LruCache } from '../src';
 import { CACHE_INSTANCE, CACHE_INSTANCE_ID_PROPERTY, CACHE_INSTANCES_PROPERTY } from '../src/constants';
 
 describe('Cacheable decorator test suite', () => {

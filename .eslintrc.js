@@ -1,6 +1,6 @@
 const baseRules = require('@stimulcross/eslint-config-typescript/style');
 
-const memberNames = ['^noUpdateTTL$', '^getRemainingTTL$'];
+const memberNames = ['^noUpdateTTL$', '^getRemainingTTL$', '^LRUCache$'];
 
 const namingConvention = [...baseRules.rules['@typescript-eslint/naming-convention']].map(rule => {
 	if (typeof rule === 'object') {
@@ -48,6 +48,7 @@ module.exports = {
 		'@typescript-eslint/no-explicit-any': 'off',
 		'@typescript-eslint/unified-signatures': 'off',
 		'@typescript-eslint/naming-convention': namingConvention,
-		'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
+		'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+		'@typescript-eslint/require-await': 'off'
 	}
 };
