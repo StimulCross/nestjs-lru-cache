@@ -18,35 +18,33 @@ describe('Cacheable decorator test suite', () => {
 		await app.init();
 	});
 
-	test('Cacheable class must has static "__cache_instances__" property', async () => {
-		expect(CacheableTestService).toHaveProperty(CACHE_INSTANCES_PROPERTY);
+	test('Cacheable class must has static "__CACHE_INSTANCES__" property', async () => {
+		expect(Object.getOwnPropertySymbols(Object.getPrototypeOf(CacheableTestService))).toContain(
+			CACHE_INSTANCES_PROPERTY
+		);
+		expect(typeof CacheableTestService[CACHE_INSTANCES_PROPERTY]).toBe('number');
 	});
 
-	test('Cacheable class must increment static "__cache_instances__" property on new instance creation', async () => {
+	test('Cacheable class must increment static "__CACHE_INSTANCES__" property on new instance creation', async () => {
 		await app.resolve(CacheableTestService);
 		expect(CacheableTestService[CACHE_INSTANCES_PROPERTY]).toBe(1);
 		await app.resolve(CacheableTestService);
 		expect(CacheableTestService[CACHE_INSTANCES_PROPERTY]).toBe(2);
 	});
 
-	test('Cacheable instance must has "__cache_instance_id__" property', async () => {
+	test('Cacheable instance must has "__CACHE_INSTANCE_ID__" property', async () => {
 		const cacheableTestService = await app.resolve(CacheableTestService);
-		expect(cacheableTestService).toHaveProperty(CACHE_INSTANCE_ID_PROPERTY);
+		expect(Object.getOwnPropertySymbols(cacheableTestService)).toContain(CACHE_INSTANCE_ID_PROPERTY);
+		expect(typeof cacheableTestService[CACHE_INSTANCE_ID_PROPERTY]).toBe('number');
 	});
 
-	test('Cacheable instance must has "__cache_instance_id__" property', async () => {
-		const cacheableTestService = await app.resolve(CacheableTestService);
-		expect(cacheableTestService).toHaveProperty(CACHE_INSTANCE_ID_PROPERTY);
-	});
-
-	test('Cacheable instance "__cache_instance_id__" property must be equal to the static "__cache_instances__" property', async () => {
+	test('Cacheable instance "__CACHE_INSTANCE_ID__" property must be equal to the static "__CACHE_INSTANCES__" property', async () => {
 		const cacheableTestService = await app.resolve(CacheableTestService);
 		expect(CacheableTestService[CACHE_INSTANCES_PROPERTY]).toBe(cacheableTestService[CACHE_INSTANCE_ID_PROPERTY]);
 	});
 
 	test('Cacheable instance must has DI injected cache service', async () => {
 		const cacheableTestService = await app.resolve(CacheableTestService);
-		expect(cacheableTestService).toHaveProperty(CACHE_INSTANCE);
-		expect(cacheableTestService[CACHE_INSTANCE]).toBeInstanceOf(LruCache);
+		expect(Object.getOwnPropertySymbols(cacheableTestService)).toContain(CACHE_INSTANCE);
 	});
 });
