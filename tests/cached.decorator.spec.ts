@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { LruCacheModule, LruCache } from '../src';
@@ -5,6 +6,7 @@ import { CacheableTestService } from './test-app/cacheable-test.service';
 import { TestService } from './test-app/test.service';
 import { CACHE_INSTANCE_ID_PROPERTY } from '../src/constants';
 import { wrapCacheKey } from '../src/utils';
+import { NonInjectableCacheService } from './test-app/non-ijectable-cache.service';
 import { sleep } from './test-app/utils/sleep';
 
 describe('Cached decorator test suite', () => {
@@ -209,5 +211,22 @@ describe('Cached decorator test suite', () => {
 		testService.addHashFunctionOptions(a, b);
 
 		expect(cache.get(cacheKey)).toBe(a + b);
+	});
+
+	test('Cached method should print warning and call original function if the class is not registered in providers', async () => {
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
+
+		const service = new NonInjectableCacheService();
+		service.getRandomNumber();
+
+		expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
+		expect(loggerWarnSpy).toHaveBeenCalledWith(
+			expect.stringContaining(
+				'Failed to get the cache instance in method NonInjectableCacheService.getRandomNumber()'
+			)
+		);
+
+		loggerWarnSpy.mockRestore();
 	});
 });

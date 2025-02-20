@@ -1,8 +1,10 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { CACHE_INSTANCE, CACHE_INSTANCE_ID_PROPERTY } from '../constants';
 import { type CacheArgumentOptions, type CachedDecoratorOptions } from '../interfaces';
 import { LruCache } from '../providers';
 import { isObject, wrapCacheKey } from '../utils';
+
+const logger = new Logger('LruCache', { timestamp: true });
 
 function createCachedFunction(
 	target: object,
@@ -11,9 +13,18 @@ function createCachedFunction(
 	options: CachedDecoratorOptions
 ) {
 	return function (
-		this: { [CACHE_INSTANCE_ID_PROPERTY]?: number; [CACHE_INSTANCE]: LruCache<unknown, unknown> },
+		this: { [CACHE_INSTANCE_ID_PROPERTY]?: number; [CACHE_INSTANCE]?: LruCache<unknown, unknown> },
 		...args: unknown[]
 	) {
+		if (!this[CACHE_INSTANCE]) {
+			logger.warn(
+				`Failed to get the cache instance in method ${target.constructor.name}.${String(
+					propertyKey
+				)}(). This may be because the class using the @Cached decorator has not been registered as a provider in the NestJS module, and therefore is not available in the DI container. This method's results will not be cached.`
+			);
+			return origFn.apply(this, args) as Promise<unknown>;
+		}
+
 		const cacheInstanceId = this[CACHE_INSTANCE_ID_PROPERTY] ? `_${this[CACHE_INSTANCE_ID_PROPERTY]}` : '';
 		let cacheOptionsArg: CacheArgumentOptions | undefined;
 
@@ -37,6 +48,7 @@ function createCachedFunction(
 
 		cacheKey = wrapCacheKey(cacheKey);
 
+		// @ts-ignore TODO later
 		if ((mergedOptions.returnCached ?? true) && this[CACHE_INSTANCE].has(cacheKey, mergedOptions)) {
 			return this[CACHE_INSTANCE].get(cacheKey, mergedOptions);
 		}
