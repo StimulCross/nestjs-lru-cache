@@ -2,11 +2,10 @@ import { type INestApplication, Injectable } from '@nestjs/common';
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { LRUCache } from 'lru-cache';
-import { LRU_CACHE, LruCacheModule, type LruCacheOptions } from '../src';
+import { InjectCache, LRU_CACHE, LruCacheModule, type LruCacheOptions } from '../src';
 import { LRU_CACHE_OPTIONS } from '../src/constants';
 import { OptionsFactory } from './test-app/options-factory/options-factory';
 import { OptionsFactoryModule } from './test-app/options-factory/options-factory.module';
-import { InjectCache } from '../src/decorators/inject-cache.decorator';
 
 @Injectable()
 class CacheConsumer {
