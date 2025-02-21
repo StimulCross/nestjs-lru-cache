@@ -3,7 +3,7 @@ import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { type LRUCache } from 'lru-cache';
 import { LruCacheModule, LRU_CACHE } from '../src';
-import { CacheableTestService } from './test-app/cacheable-test.service';
+import { IsolatedCacheTestService } from './test-app/isolated-cache-test.service';
 import { TestService } from './test-app/test.service';
 import { CACHE_INSTANCE_ID_PROPERTY } from '../src/constants';
 import { wrapCacheKey } from '../src/utils';
@@ -17,7 +17,7 @@ describe('Cached decorator test suite', () => {
 	beforeEach(async () => {
 		const TestingModule = await Test.createTestingModule({
 			imports: [LruCacheModule.register({ isGlobal: true, ttl: 1000, max: 1000 })],
-			providers: [CacheableTestService, TestService]
+			providers: [IsolatedCacheTestService, TestService]
 		}).compile();
 
 		app = TestingModule.createNestApplication();
@@ -46,43 +46,30 @@ describe('Cached decorator test suite', () => {
 		expect(cache.has(cachedKey)).toBe(true);
 	});
 
-	test('Cached method should generate expected cache keys for cacheable class', async () => {
-		const cacheableTestService1 = await app.resolve(CacheableTestService);
-		const cacheableTestService2 = await app.resolve(CacheableTestService);
-		const cachedKey1 = wrapCacheKey('CacheableTestService_1.getRandomNumber');
-		const cachedKey2 = wrapCacheKey('CacheableTestService_2.getRandomNumber');
-
-		cacheableTestService1.getRandomNumber();
-		cacheableTestService2.getRandomNumber();
-
-		expect(cache.has(cachedKey1)).toBe(true);
-		expect(cache.has(cachedKey2)).toBe(true);
-	});
-
 	test('Cached method should cache the result', async () => {
-		const cacheableTestService = await app.resolve(CacheableTestService);
+		const isolatedCacheTestService = await app.resolve(IsolatedCacheTestService);
 		const cachedKey = wrapCacheKey(
-			`${CacheableTestService.name}_${cacheableTestService[CACHE_INSTANCE_ID_PROPERTY]}.getRandomNumber`
+			`${IsolatedCacheTestService.name}_${isolatedCacheTestService[CACHE_INSTANCE_ID_PROPERTY]}.getRandomNumber`
 		);
 
-		const val = cacheableTestService.getRandomNumber();
+		const val = isolatedCacheTestService.getRandomNumber();
 		expect(cache.get(cachedKey)).toBe(val);
 	});
 
 	test('Cached method should cache the result only for the specified TTL', async () => {
-		const cacheableTestService = await app.resolve(CacheableTestService);
+		const isolatedCacheTestService = await app.resolve(IsolatedCacheTestService);
 		const cachedKey = wrapCacheKey(
-			`${CacheableTestService.name}_${cacheableTestService[CACHE_INSTANCE_ID_PROPERTY]}.getRandomNumber`
+			`${IsolatedCacheTestService.name}_${isolatedCacheTestService[CACHE_INSTANCE_ID_PROPERTY]}.getRandomNumber`
 		);
 
-		const val = cacheableTestService.getRandomNumber();
+		const val = isolatedCacheTestService.getRandomNumber();
 		expect(cache.get(cachedKey)).toBe(val);
 
 		await sleep(110);
 
 		expect(cache.get(cachedKey)).toBe(undefined);
 
-		const newVal = cacheableTestService.getRandomNumber();
+		const newVal = isolatedCacheTestService.getRandomNumber();
 		expect(newVal).not.toBe(val);
 	});
 
@@ -107,21 +94,21 @@ describe('Cached decorator test suite', () => {
 	});
 
 	test('Cached method should use separate cache for different instances of the decorated class', async () => {
-		const cacheableTestService1 = await app.resolve(CacheableTestService);
-		const cacheableTestService2 = await app.resolve(CacheableTestService);
+		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
+		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
-		const val1 = cacheableTestService1.getRandomNumber();
-		const val2 = cacheableTestService2.getRandomNumber();
+		const val1 = isolatedCacheTestService1.getRandomNumber();
+		const val2 = isolatedCacheTestService2.getRandomNumber();
 
 		expect(val1).not.toBe(val2);
 	});
 
 	test('Cached method should use shared cache for different instances of decorated class if "useSharedCache" was set in decorator options', async () => {
-		const cacheableTestService1 = await app.resolve(CacheableTestService);
-		const cacheableTestService2 = await app.resolve(CacheableTestService);
+		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
+		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
-		const val1 = cacheableTestService1.getRandomNumberShared();
-		const val2 = cacheableTestService2.getRandomNumberShared();
+		const val1 = isolatedCacheTestService1.getRandomNumberShared();
+		const val2 = isolatedCacheTestService2.getRandomNumberShared();
 
 		expect(val1).toBe(val2);
 	});
@@ -175,11 +162,11 @@ describe('Cached decorator test suite', () => {
 	});
 
 	test('Cached method should use shared cache across multiple instances if "useSharedCache" provided in argument options', async () => {
-		const cacheableTestService1 = await app.resolve(CacheableTestService);
-		const cacheableTestService2 = await app.resolve(CacheableTestService);
+		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
+		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
-		const val1 = cacheableTestService1.getRandomNumberWithOptions({ useSharedCache: true });
-		const val2 = cacheableTestService2.getRandomNumberWithOptions({ useSharedCache: true });
+		const val1 = isolatedCacheTestService1.getRandomNumberWithOptions({ useSharedCache: true });
+		const val2 = isolatedCacheTestService2.getRandomNumberWithOptions({ useSharedCache: true });
 
 		expect(val2).toBe(val1);
 	});

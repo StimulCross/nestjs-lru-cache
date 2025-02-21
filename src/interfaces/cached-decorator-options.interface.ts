@@ -29,8 +29,8 @@ export interface CachedDecoratorOptions<K = any, V = any, FC = unknown>
 	/**
 	 * Makes the decorated method to use the shared cache across all instances of the class.
 	 *
-	 * This is the default behavior unless you have applied {@link Cacheable} decorator on the class.
-	 * If you have applied {@link Cacheable} decorator, but you want to force some methods to use the shared cache
+	 * This is the default behavior unless you have applied {@link IsolatedCache} decorator on the class.
+	 * If you have applied {@link IsolatedCache} decorator, but you want to force some methods to use the shared cache
 	 * across all class instances, you can set this option to `true` to enable such behavior on the decorated method
 	 * level.
 	 *

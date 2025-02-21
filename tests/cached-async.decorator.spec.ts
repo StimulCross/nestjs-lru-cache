@@ -3,7 +3,7 @@ import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { type LRUCache } from 'lru-cache';
 import { LRU_CACHE, LruCacheModule } from '../src';
-import { CacheableTestService } from './test-app/cacheable-test.service';
+import { IsolatedCacheTestService } from './test-app/isolated-cache-test.service';
 import { NonInjectableCacheService } from './test-app/non-ijectable-cache.service';
 import { TestService } from './test-app/test.service';
 import { wrapCacheKey } from '../src/utils';
@@ -16,7 +16,7 @@ describe('Cached async decorator test suite', () => {
 	beforeEach(async () => {
 		const TestingModule = await Test.createTestingModule({
 			imports: [LruCacheModule.register({ ttl: 1000, max: 1000 })],
-			providers: [CacheableTestService, TestService]
+			providers: [IsolatedCacheTestService, TestService]
 		}).compile();
 
 		app = TestingModule.createNestApplication();
@@ -117,31 +117,31 @@ describe('Cached async decorator test suite', () => {
 	});
 
 	test('Cached method should cache promise independently for different instances of decorated class', async () => {
-		const cacheableTestService1 = await app.resolve(CacheableTestService);
-		const cacheableTestService2 = await app.resolve(CacheableTestService);
+		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
+		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
-		const promise1 = cacheableTestService1.getRandomNumberAsync();
-		const promise2 = cacheableTestService2.getRandomNumberAsync();
+		const promise1 = isolatedCacheTestService1.getRandomNumberAsync();
+		const promise2 = isolatedCacheTestService2.getRandomNumberAsync();
 
 		expect(await promise1).not.toBe(await promise2);
 	});
 
 	test('Cached async method should cache promise independently for different instances of decorated class', async () => {
-		const cacheableTestService1 = await app.resolve(CacheableTestService);
-		const cacheableTestService2 = await app.resolve(CacheableTestService);
+		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
+		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
-		const val1 = cacheableTestService1.getRandomNumberAsync();
-		const val2 = cacheableTestService2.getRandomNumberAsync();
+		const val1 = isolatedCacheTestService1.getRandomNumberAsync();
+		const val2 = isolatedCacheTestService2.getRandomNumberAsync();
 
 		expect(await val1).not.toBe(await val2);
 	});
 
 	test('Cached async method should use shared cache for different instances of decorated class if "useSharedCache" was set in decorator options', async () => {
-		const cacheableTestService1 = await app.resolve(CacheableTestService);
-		const cacheableTestService2 = await app.resolve(CacheableTestService);
+		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
+		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
-		const promise1 = cacheableTestService1.getRandomNumberAsyncShared();
-		const promise2 = cacheableTestService2.getRandomNumberAsyncShared();
+		const promise1 = isolatedCacheTestService1.getRandomNumberAsyncShared();
+		const promise2 = isolatedCacheTestService2.getRandomNumberAsyncShared();
 
 		expect(await promise1).toBe(await promise2);
 	});
@@ -187,11 +187,11 @@ describe('Cached async decorator test suite', () => {
 	});
 
 	test('Cached async method should use shared cache across multiple instances if "useSharedCache" provided in argument options', async () => {
-		const cacheableTestService1 = await app.resolve(CacheableTestService);
-		const cacheableTestService2 = await app.resolve(CacheableTestService);
+		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
+		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
-		const promise1 = cacheableTestService1.getRandomNumberAsyncWithOptions({ useSharedCache: true });
-		const promise2 = cacheableTestService2.getRandomNumberAsyncWithOptions({ useSharedCache: true });
+		const promise1 = isolatedCacheTestService1.getRandomNumberAsyncWithOptions({ useSharedCache: true });
+		const promise2 = isolatedCacheTestService2.getRandomNumberAsyncWithOptions({ useSharedCache: true });
 
 		expect(await promise1).toBe(await promise2);
 	});
