@@ -31,7 +31,7 @@
 		"prepare": "husky install"
 	},
 	"engines": {
-		"node": ">=8.3.0"
+		"node": ">=20"
 	},
 	"dependencies": {
 		"lru-cache": "^11.0.2"
