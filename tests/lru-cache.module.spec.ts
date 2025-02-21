@@ -1,24 +1,31 @@
-import { type INestApplication } from '@nestjs/common';
+import { type INestApplication, Injectable } from '@nestjs/common';
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import { type LimitedByCount, type LimitedByTTL } from 'lru-cache';
-import { LruCache, LruCacheModule, type LruCacheOptions } from '../src';
+import { LRUCache } from 'lru-cache';
+import { LRU_CACHE, LruCacheModule, type LruCacheOptions } from '../src';
 import { LRU_CACHE_OPTIONS } from '../src/constants';
 import { OptionsFactory } from './test-app/options-factory/options-factory';
 import { OptionsFactoryModule } from './test-app/options-factory/options-factory.module';
+import { InjectCache } from '../src/decorators/inject-cache.decorator';
+
+@Injectable()
+class CacheConsumer {
+	constructor(@InjectCache() private readonly cache: LRUCache<{}, {}>) {}
+
+	getCache(): LRUCache<{}, {}> {
+		return this.cache;
+	}
+}
 
 const testCacheOptions = (options: LruCacheOptions, max?: number, ttl?: number): void => {
 	expect(options).toBeDefined();
-	expect((options as LimitedByCount).max).toBe(max);
-	expect((options as LimitedByTTL).ttl).toBe(ttl);
+	expect(options.max).toBe(max);
+	expect(options.ttl).toBe(ttl);
 };
 
-const testCacheProvider = (ttlCache: LruCache): void => {
+const testCacheInstance = (ttlCache: LRUCache<any, any>): void => {
 	expect(ttlCache).toBeDefined();
-	expect(ttlCache).toHaveProperty('get');
-	expect(ttlCache).toHaveProperty('set');
-	expect(ttlCache).toHaveProperty('has');
-	expect(ttlCache).toHaveProperty('delete');
+	expect(ttlCache).toBeInstanceOf(LRUCache);
 };
 
 describe('LRU cache module test suite', () => {
@@ -42,7 +49,7 @@ describe('LRU cache module test suite', () => {
 		});
 
 		test('LRU cache should be defined', async () => {
-			testCacheProvider(app.get(LruCache));
+			testCacheInstance(app.get<LRUCache<any, any>>(LRU_CACHE));
 		});
 	});
 
@@ -53,7 +60,7 @@ describe('LRU cache module test suite', () => {
 		const testModule = async (app: INestApplication): Promise<void> => {
 			await app.init();
 			testCacheOptions(app.get<LruCacheOptions>(LRU_CACHE_OPTIONS), max, ttl);
-			testCacheProvider(app.get(LruCache));
+			testCacheInstance(app.get<LRUCache<any, any>>(LRU_CACHE));
 		};
 
 		test('LRU cache options should be resolved with "useFactory"', async () => {
@@ -111,6 +118,26 @@ describe('LRU cache module test suite', () => {
 			}).compile();
 			const app = TestingModule.createNestApplication();
 			await testModule(app);
+		});
+	});
+
+	describe('LRU cache instance', () => {
+		let app: NestApplication;
+
+		beforeAll(async () => {
+			const TestingModule = await Test.createTestingModule({
+				imports: [LruCacheModule.register({ max: 10 })],
+				providers: [CacheConsumer]
+			}).compile();
+
+			app = TestingModule.createNestApplication();
+
+			await app.init();
+		});
+
+		test('LRUCache instance should be injected using @InjectCache decorator', () => {
+			const cacheConsumer = app.get(CacheConsumer);
+			testCacheInstance(cacheConsumer.getCache());
 		});
 	});
 });

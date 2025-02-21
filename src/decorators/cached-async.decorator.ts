@@ -1,7 +1,7 @@
 import { Inject, Logger } from '@nestjs/common';
-import { CACHE_INSTANCE, CACHE_INSTANCE_ID_PROPERTY } from '../constants';
+import { type LRUCache } from 'lru-cache';
+import { CACHE_INSTANCE, CACHE_INSTANCE_ID_PROPERTY, LRU_CACHE } from '../constants';
 import { type CacheArgumentOptions, type CachedAsyncDecoratorOptions } from '../interfaces';
-import { LruCache } from '../providers';
 import { isObject, wrapCacheKey } from '../utils';
 
 const logger = new Logger('LruCache', { timestamp: true });
@@ -13,7 +13,7 @@ function createCachedAsyncFunction(
 	options: CachedAsyncDecoratorOptions
 ) {
 	return async function (
-		this: { [CACHE_INSTANCE_ID_PROPERTY]?: number; [CACHE_INSTANCE]?: LruCache<unknown, unknown> },
+		this: { [CACHE_INSTANCE_ID_PROPERTY]?: number; [CACHE_INSTANCE]?: LRUCache<any, any> },
 		...args: unknown[]
 	) {
 		if (!this[CACHE_INSTANCE]) {
@@ -48,9 +48,8 @@ function createCachedAsyncFunction(
 
 		cacheKey = wrapCacheKey(cacheKey);
 
-		// @ts-ignore TODO later
 		if ((mergedOptions.returnCached ?? true) && this[CACHE_INSTANCE].has(cacheKey, mergedOptions)) {
-			const cachedVal = this[CACHE_INSTANCE].get(cacheKey, mergedOptions);
+			const cachedVal: unknown = this[CACHE_INSTANCE].get(cacheKey, mergedOptions);
 
 			if (cachedVal instanceof Promise) {
 				return (await cachedVal) as unknown;
@@ -110,7 +109,7 @@ export function CachedAsync<K = any, V = any>(
 		| CachedAsyncDecoratorOptions['ttl']
 		| CachedAsyncDecoratorOptions['hashFunction'] = {}
 ): MethodDecorator {
-	const injectCache = Inject(LruCache);
+	const injectCache = Inject(LRU_CACHE);
 
 	return (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor => {
 		injectCache(target, CACHE_INSTANCE);

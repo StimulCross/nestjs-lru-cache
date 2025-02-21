@@ -1,7 +1,8 @@
 import { Logger } from '@nestjs/common';
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import { LruCacheModule, LruCache } from '../src';
+import { type LRUCache } from 'lru-cache';
+import { LruCacheModule, LRU_CACHE } from '../src';
 import { CacheableTestService } from './test-app/cacheable-test.service';
 import { TestService } from './test-app/test.service';
 import { CACHE_INSTANCE_ID_PROPERTY } from '../src/constants';
@@ -11,7 +12,7 @@ import { sleep } from './test-app/utils/sleep';
 
 describe('Cached decorator test suite', () => {
 	let app: NestApplication;
-	let cache: LruCache;
+	let cache: LRUCache<any, any>;
 
 	beforeEach(async () => {
 		const TestingModule = await Test.createTestingModule({
@@ -20,7 +21,7 @@ describe('Cached decorator test suite', () => {
 		}).compile();
 
 		app = TestingModule.createNestApplication();
-		cache = app.get(LruCache);
+		cache = app.get<LRUCache<any, any>>(LRU_CACHE);
 
 		await app.init();
 	});

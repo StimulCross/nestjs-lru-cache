@@ -34,7 +34,7 @@
 		"node": ">=8.3.0"
 	},
 	"dependencies": {
-		"lru-cache": "7.17.0"
+		"lru-cache": "^11.0.2"
 	},
 	"peerDependencies": {
 		"@nestjs/common": "*",

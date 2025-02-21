@@ -1,7 +1,5 @@
 # NestJS LRU Cache
 
-> **WARNING:** Although this library has been automatically (100% covered) and manually tested, it may still have fundamental design issues.
-
 ### Table of Contents
 
 -   [Installation](#installation)
@@ -34,9 +32,15 @@ Using **yarn**:
 yarn add nestjs-lru-cache
 ```
 
+Using **pnpm**:
+
+```
+pnpm add nestjs-lru-cache
+```
+
 ## Introduction
 
-This is a NestJS wrapper around popular [lru-cache](https://github.com/isaacs/node-lru-cache) library, one of the most performant LRU cache implementations available, with support for fancy **[cache decorators](#decorators)** ❤
+This is a NestJS wrapper around popular [lru-cache](https://github.com/isaacs/node-lru-cache) library, one of the most performant LRU cache implementations available, with support for fancy **[cache decorators](#decorators)**.
 
 This cache module focuses on the LRU caching strategy where the least used entries are removed from the cache.
 
@@ -46,7 +50,7 @@ Although this library supports TTL, it does not make strong TTL guarantees. Ther
 
 ## General Usage
 
-First of all, you must register the module in your main **AppModule** using either `register` or `registerAsync` static methods.
+First, you must register the module in your main **AppModule** using either `register` or `registerAsync` static methods.
 
 `register` method allow you to directly set [cache options](#options):
 
@@ -137,99 +141,41 @@ import { LruCacheModule } from 'nestjs-lru-cache';
 export class AppModule {}
 ```
 
-Once the module is registered, `LruCache` provider can be injected as a dependency. Note that `LruCacheModule` is registered as a global module, so it does not need to be imported into other modules.
+Once the module is registered, original `LRUCache` instance can be injected as a dependency using `LRU_CACHE` token or `@InjectCache` decorator.
+
+Note that `LruCacheModule` is registered as a global module, so it does not need to be imported into other modules.
 
 ```ts
-import { Injectable } from '@nestjs/common';
-import { LruCache } from 'nestjs-lru-cache';
+import { Inject, Injectable } from '@nestjs/common';
+import { LRUCache } from 'lru-cache';
+import { LRU_CACHE } from 'nestjs-lru-cache';
 
 @Injectable()
 export class AnyCustomProvider {
-	constructor(private readonly _cache: LruCache) {}
+	constructor(@Inject(LRU_CACHE) private readonly _cache: LRUCache<{}, {}>) {}
 }
 ```
 
-See [API](#api) section below for the cache usage information.
+Or
+
+```ts
+import { Injectable } from '@nestjs/common';
+import { LRUCache } from 'lru-cache';
+import { InjectCache } from 'nestjs-lru-cache';
+
+@Injectable()
+export class AnyCustomProvider {
+	constructor(@InjectCache() private readonly _cache: LRUCache<{}, {}>) {}
+}
+```
 
 ## Options
 
-```ts
-interface LruCacheOptions<K = any, V = any> {
-	max?: number;
-	maxSize?: number;
-	ttl?: number;
-
-	// At lest one of the three above is required.
-
-	maxEntrySize?: number;
-	sizeCalculation?: SizeCalculator<K, V>;
-	dispose?: Disposer<K, V>;
-	disposeAfter?: Disposer<K, V>;
-	noDisposeOnSet?: boolean;
-	fetchMethod?: Fetcher<K, V>;
-	noDeleteOnFetchRejection?: boolean;
-	fetchContext?: any;
-	noUpdateTTL?: boolean;
-	ttlResolution?: number;
-	ttlAutopurge?: boolean;
-	allowStale?: boolean;
-	updateAgeOnGet?: boolean;
-	noDeleteOnStaleGet?: boolean;
-	updateAgeOnHas?: boolean;
-}
-```
-
-> **TIP:** Read the detailed description of each option in the original [lru-cache repository](https://github.com/isaacs/node-lru-cache/blob/main/README.md#options).
+The `LruCacheOptions` type inherits the configuration options from the underlying `lru-cache` library. For a complete list of available options, please refer to the [lru-cache documentation](https://isaacs.github.io/node-lru-cache/types/LRUCache.Options.html).
 
 ## API
 
-```ts
-interface LruCache<K = any, V = any> {
-	readonly max: number;
-	readonly maxSize: number;
-	readonly maxEntrySize: number;
-	readonly calculatedSize: number;
-	readonly sizeCalculation?: SizeCalculator<K, V>;
-	readonly ttl: number;
-	readonly ttlResolution: number;
-	readonly ttlAutopurge: boolean;
-	readonly allowStale: boolean;
-	readonly updateAgeOnGet: boolean;
-	readonly updateAgeOnHas: boolean;
-	readonly noDeleteOnStaleGet: boolean;
-	readonly dispose: Disposer<K, V>;
-	readonly disposeAfter: Disposer<K, V> | null;
-	readonly noDisposeOnSet: boolean;
-	readonly fetchMethod: Fetcher<K, V> | null;
-	readonly size: number;
-
-	has(key: K, options?: HasOptions): boolean;
-	get<T = V>(key: K, options?: GetOptions): T | undefined;
-	peek<T = V>(key: K, options?: PeekOptions): T | undefined;
-	set(key: K, value: V, ttl?: number): this;
-	set(key: K, value: V, options?: SetOptions<K, V>): this;
-	delete(key: K): boolean;
-	clear(): void;
-	pop(): V | undefined;
-	purgeStale(): boolean;
-	find<T = V>(callbackFn: (value: V, key: K, cache: this) => boolean | undefined | void, options?: GetOptions): T;
-	forEach<T = this>(callbackFn: (this: T, value: V, key: K, cache: this) => void, thisArg?: T): void;
-	rforEach<T = this>(callbackFn: (this: T, value: V, key: K, cache: this) => void, thisArg?: T): void;
-	getRemainingTTL(key: K): number;
-	keys(): Generator<K, void, void>;
-	rkeys(): Generator<K, void, void>;
-	values(): Generator<V, void, void>;
-	rvalues(): Generator<V, void, void>;
-	entries(): Generator<[K, V]>;
-	rentries(): Generator<[K, V]>;
-	dump(): Array<[K, Entry<V>]>;
-	load(cacheEntries: ReadonlyArray<[K, Entry<V>]>): void;
-	fetch<ExpectedValue = V>(key: K, options?: FetcherOptions<K, V>): Promise<ExpectedValue | undefined>;
-	[Symbol.iterator](): Iterator<[K, V]>;
-}
-```
-
-> **TIP:** Read the detailed description of the API in the original [lru-cache repository](https://github.com/isaacs/node-lru-cache/blob/main/README.md#api).
+For a comprehensive look at all available methods and proeprties, please refer to the official [lru-cache documentation](https://isaacs.github.io/node-lru-cache/classes/LRUCache-1.html).
 
 ## Decorators
 
@@ -374,7 +320,8 @@ export class UsersService {
 
 The resulting cache key will look something like this: `__UsersService.getUsers:manager_online_false__`.
 
-> **NOTE:** You're better off not using `JSON.stringify()` to convert objects to strings. If two identical objects with the same properties and values are passed with a different order of properties, this will generate different keys, for example, `{"key":1,"val":1}` and `{"val":1,"key":1}`.
+> [!NOTE]
+> You're better off not using `JSON.stringify()` to convert objects to strings. If two identical objects with the same properties and values are passed with a different order of properties, this will generate different keys, for example, `{"key":1,"val":1}` and `{"val":1,"key":1}`.
 
 By default, the `@Cached` decorator will use the default [options](#options) specified on module registration, but it also ships its own options and allows you to override the default options for the decorated method.
 
@@ -398,7 +345,8 @@ interface CachedDecoratorOptions<K = any, V = any> {
 
 The `@Cached` decorator can accept options object as the first argument instead of hash function. These options allow you to flexibly control caching behavior for a single decorated method.
 
-> **NOTE:** Some options listed below override similar options specified in module [options](#options). If they are not set, the default values will be used.
+> [!NOTE]
+> Some options listed below override similar options specified in module [options](#options). If they are not set, the default values will be used.
 
 > **WARNING:** Make sure you set TTL in the decorator options or default TTL in module options. If you don't set TTL, this may cause the decorated method to always return the cached result, even if you set `max` or `maxSize` limiters.
 
@@ -611,9 +559,9 @@ Available test commands `test`, `test:verbose`, `test:cov`, `test:cov:verbose`.
 
 ```
  PASS  tests/cached-async.decorator.spec.ts
+ PASS  tests/lru-cache.module.spec.ts
  PASS  tests/cached.decorator.spec.ts
  PASS  tests/lru-cache.spec.ts
- PASS  tests/lru-cache.module.spec.ts
  PASS  tests/cacheable.decorator.spec.ts
 ----------------------------|---------|----------|---------|---------|-------------------
 File                        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
@@ -626,19 +574,18 @@ All files                   |     100 |      100 |     100 |     100 |
   cacheable.decorator.ts    |     100 |      100 |     100 |     100 |
   cached-async.decorator.ts |     100 |      100 |     100 |     100 |
   cached.decorator.ts       |     100 |      100 |     100 |     100 |
- src/providers              |     100 |      100 |     100 |     100 |
-  lru-cache.ts              |     100 |      100 |     100 |     100 |
+  inject-cache.decorator.ts |     100 |      100 |     100 |     100 |
  src/utils                  |     100 |      100 |     100 |     100 |
   is-object.ts              |     100 |      100 |     100 |     100 |
   wrap-cache-key.ts         |     100 |      100 |     100 |     100 |
 ----------------------------|---------|----------|---------|---------|-------------------
 
 Test Suites: 5 passed, 5 total
-Tests:       94 passed, 94 total
+Tests:       96 passed, 96 total
 Snapshots:   0 total
-Time:        5.602 s, estimated 6 s
+Time:        3.911 s, estimated 7 s
 Ran all test suites.
-Done in 6.24s.
+Done in 4.32s.
 ```
 
 ## Support

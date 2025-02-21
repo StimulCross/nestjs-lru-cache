@@ -1,12 +1,12 @@
 import { type DynamicModule, Module, type Provider } from '@nestjs/common';
-import { LRU_CACHE_OPTIONS } from './constants';
+import { LRUCache } from 'lru-cache';
+import { LRU_CACHE, LRU_CACHE_OPTIONS } from './constants';
 import {
 	type LruCacheAsyncModuleOptions,
 	type LruCacheModuleOptions,
 	type LruCacheOptions,
 	type LruCacheOptionsFactory
 } from './interfaces';
-import { LruCache } from './providers';
 
 /**
  * LRU cache module.
@@ -28,11 +28,16 @@ export class LruCacheModule {
 			useValue: options
 		};
 
+		const lruCache: Provider<LRUCache<any, any>> = {
+			provide: LRU_CACHE,
+			useValue: new LRUCache(options)
+		};
+
 		return {
 			global: options.isGlobal,
 			module: LruCacheModule,
-			providers: [optionsProvider, LruCache],
-			exports: [LruCache]
+			providers: [optionsProvider, lruCache],
+			exports: [LRU_CACHE]
 		};
 	}
 
@@ -44,12 +49,18 @@ export class LruCacheModule {
 	 * @param options LRU cache async options.
 	 */
 	public static registerAsync(options: LruCacheAsyncModuleOptions): DynamicModule {
+		const lruCache: Provider<LRUCache<any, any>> = {
+			provide: LRU_CACHE,
+			useFactory: (opts: LruCacheOptions) => new LRUCache(opts),
+			inject: [LRU_CACHE_OPTIONS]
+		};
+
 		return {
 			global: options.isGlobal,
 			imports: options.imports ?? [],
 			module: LruCacheModule,
-			providers: [...LruCacheModule._createOptionsProviders(options), LruCache],
-			exports: [LruCache]
+			providers: [...LruCacheModule._createOptionsProviders(options), lruCache],
+			exports: [LRU_CACHE]
 		};
 	}
 

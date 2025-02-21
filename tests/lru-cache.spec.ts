@@ -1,23 +1,23 @@
+import { setTimeout as sleep } from 'node:timers/promises';
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import { type Disposer, type Fetcher } from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 import { sizeof } from 'sizeof';
-import { LruCacheModule, LruCache } from '../src';
-import { sleep } from './test-app/utils/sleep';
+import { LRU_CACHE, LruCacheModule } from '../src';
 
 describe('LRU cache provider test suite', () => {
 	describe('LRU cache options', () => {
 		let app: NestApplication;
-		let cache: LruCache;
+		let cache: LRUCache<{}, {}>;
 		const max = 20;
 		const ttl = 5000;
 		const maxSize = 400;
 		const maxEntrySize = 100;
 		const sizeCalculation = (val: object): number => sizeof(val);
-		const dispose: Disposer<any, any> = (value, key, reason) => {
+		const dispose: LRUCache.Disposer<{}, {}> = (value, key, reason) => {
 			console.log(value, key, reason);
 		};
-		const disposeAfter: Disposer<any, any> = (value, key, reason) => {
+		const disposeAfter: LRUCache.Disposer<{}, {}> = (value, key, reason) => {
 			console.log(value, key, reason);
 		};
 		const ttlResolution = 10;
@@ -25,8 +25,7 @@ describe('LRU cache provider test suite', () => {
 		const ttlAutopurge = true;
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const noUpdateTTL = true;
-		const fetchContext = {};
-		const fetchMethod: Fetcher<any, any> = (key, staleValue, options) => {
+		const fetchMethod: LRUCache.Fetcher<{}, {}> = (key, staleValue, options) => {
 			console.log(key, staleValue, options);
 		};
 		const noDeleteOnFetchRejection = true;
@@ -50,7 +49,6 @@ describe('LRU cache provider test suite', () => {
 						updateAgeOnGet,
 						disposeAfter,
 						fetchMethod,
-						fetchContext,
 						noDeleteOnStaleGet,
 						noDisposeOnSet,
 						ttlAutopurge,
@@ -62,7 +60,7 @@ describe('LRU cache provider test suite', () => {
 			}).compile();
 
 			app = TestingModule.createNestApplication();
-			cache = app.get(LruCache);
+			cache = app.get<LRUCache<{}, {}>>(LRU_CACHE);
 
 			await app.init();
 		});
@@ -92,7 +90,7 @@ describe('LRU cache provider test suite', () => {
 
 	describe('LRU cache general functionality', () => {
 		let app: NestApplication;
-		let cache: LruCache<unknown, unknown>;
+		let cache: LRUCache<{}, {}>;
 		const max = 20;
 		const ttl = 5000;
 
@@ -102,7 +100,7 @@ describe('LRU cache provider test suite', () => {
 			}).compile();
 
 			app = TestingModule.createNestApplication();
-			cache = app.get(LruCache);
+			cache = app.get<LRUCache<{}, {}>>(LRU_CACHE);
 
 			await app.init();
 		});
@@ -123,10 +121,10 @@ describe('LRU cache provider test suite', () => {
 				ttl: Infinity
 			};
 
-			cache.set(cacheEntry1.key, cacheEntry1.val, cacheEntry2.ttl);
+			cache.set(cacheEntry1.key, cacheEntry1.val, { ttl: cacheEntry2.ttl });
 			expect(cache.size).toBe(1);
 
-			cache.set(cacheEntry2.key, cacheEntry2.val, cacheEntry2.ttl);
+			cache.set(cacheEntry2.key, cacheEntry2.val, { ttl: cacheEntry2.ttl });
 			expect(cache.size).toBe(2);
 		});
 
@@ -183,7 +181,7 @@ describe('LRU cache provider test suite', () => {
 				val: 1,
 				ttl: 100
 			};
-			cache.set(cacheEntry.key, cacheEntry.val, cacheEntry.ttl);
+			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
 			expect(cache.get(cacheEntry.key)).toBe(cacheEntry.val);
 			expect(cache.getRemainingTTL(cacheEntry.key)).toBeGreaterThan(90);
@@ -214,8 +212,8 @@ describe('LRU cache provider test suite', () => {
 				val: 2,
 				ttl: 100
 			};
-			cache.set(cacheEntry1.key, cacheEntry1.val, cacheEntry1.ttl);
-			cache.set(cacheEntry2.key, cacheEntry2.val, cacheEntry2.ttl);
+			cache.set(cacheEntry1.key, cacheEntry1.val, { ttl: cacheEntry1.ttl });
+			cache.set(cacheEntry2.key, cacheEntry2.val, { ttl: cacheEntry2.ttl });
 
 			expect(cache.delete(cacheEntry1.key)).toBe(true);
 			expect(cache.delete(cacheEntry2.key)).toBe(true);
@@ -232,8 +230,8 @@ describe('LRU cache provider test suite', () => {
 				val: 2,
 				ttl: 20
 			};
-			cache.set(cacheEntry1.key, cacheEntry1.val, cacheEntry1.ttl);
-			cache.set(cacheEntry2.key, cacheEntry2.val, cacheEntry2.ttl);
+			cache.set(cacheEntry1.key, cacheEntry1.val, { ttl: cacheEntry1.ttl });
+			cache.set(cacheEntry2.key, cacheEntry2.val, { ttl: cacheEntry2.ttl });
 
 			cache.clear();
 
@@ -435,7 +433,7 @@ describe('LRU cache provider test suite', () => {
 			cache.forEach((value, key, cacheInstance) => {
 				expect(key).toBe(count);
 				expect(value).toBe(count);
-				expect(cacheInstance).toBeInstanceOf(LruCache);
+				expect(cacheInstance).toBeInstanceOf(LRUCache);
 				count--;
 			});
 		});
@@ -452,7 +450,7 @@ describe('LRU cache provider test suite', () => {
 			cache.rforEach((value, key, cacheInstance) => {
 				expect(key).toBe(count);
 				expect(value).toBe(count);
-				expect(cacheInstance).toBeInstanceOf(LruCache);
+				expect(cacheInstance).toBeInstanceOf(LRUCache);
 				count++;
 			});
 		});
@@ -542,7 +540,7 @@ describe('LRU cache provider test suite', () => {
 
 	describe('LRU cache capacity tracking functionality', () => {
 		let app: NestApplication;
-		let cache: LruCache;
+		let cache: LRUCache<{}, {}>;
 		const max = 5;
 
 		beforeAll(async () => {
@@ -551,7 +549,7 @@ describe('LRU cache provider test suite', () => {
 			}).compile();
 
 			app = TestingModule.createNestApplication();
-			cache = app.get(LruCache);
+			cache = app.get<LRUCache<{}, {}>>(LRU_CACHE);
 
 			await app.init();
 		});
@@ -578,7 +576,7 @@ describe('LRU cache provider test suite', () => {
 
 	describe('LRU cache TTL tracking functionality', () => {
 		let app: NestApplication;
-		let cache: LruCache;
+		let cache: LRUCache<{}, {}>;
 		const max = 10;
 		const ttl = 2000;
 
@@ -588,7 +586,7 @@ describe('LRU cache provider test suite', () => {
 			}).compile();
 
 			app = TestingModule.createNestApplication();
-			cache = app.get(LruCache);
+			cache = app.get<LRUCache<{}, {}>>(LRU_CACHE);
 
 			await app.init();
 			await app.listen(3000);
@@ -604,7 +602,7 @@ describe('LRU cache provider test suite', () => {
 
 		test("Should reset entry's TTL on check", async () => {
 			const cacheKey = 1;
-			cache.set(cacheKey, true, 100);
+			cache.set(cacheKey, true, { ttl: 100 });
 
 			await sleep(50);
 
@@ -618,7 +616,7 @@ describe('LRU cache provider test suite', () => {
 				val: 1,
 				ttl: 10
 			};
-			cache.set(cacheEntry.key, cacheEntry.val, cacheEntry.ttl);
+			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
 			await sleep(cacheEntry.ttl + 1);
 
@@ -631,7 +629,7 @@ describe('LRU cache provider test suite', () => {
 				val: 1,
 				ttl: 50
 			};
-			cache.set(cacheEntry.key, cacheEntry.val, cacheEntry.ttl);
+			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
 			await sleep(50);
 
@@ -644,7 +642,7 @@ describe('LRU cache provider test suite', () => {
 				val: 1,
 				ttl: 50
 			};
-			cache.set(cacheEntry.key, cacheEntry.val, cacheEntry.ttl);
+			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
 			await sleep(40);
 
@@ -668,9 +666,9 @@ describe('LRU cache provider test suite', () => {
 				val: 3,
 				ttl: Infinity
 			};
-			cache.set(cacheEntry1.key, cacheEntry1.val, cacheEntry1.ttl);
-			cache.set(cacheEntry2.key, cacheEntry2.val, cacheEntry2.ttl);
-			cache.set(cacheEntry3.key, cacheEntry3.val, cacheEntry3.ttl);
+			cache.set(cacheEntry1.key, cacheEntry1.val, { ttl: cacheEntry1.ttl });
+			cache.set(cacheEntry2.key, cacheEntry2.val, { ttl: cacheEntry2.ttl });
+			cache.set(cacheEntry3.key, cacheEntry3.val, { ttl: cacheEntry3.ttl });
 
 			await sleep(cacheEntry1.ttl + 10);
 
@@ -680,14 +678,14 @@ describe('LRU cache provider test suite', () => {
 		});
 
 		test('Should return remaining TTL of an existing entry', async () => {
-			const cacheEntry1 = {
+			const cacheEntry = {
 				key: 1,
 				val: 1,
 				ttl: Infinity
 			};
-			cache.set(cacheEntry1.key, cacheEntry1.val, cacheEntry1.ttl);
+			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
-			expect(cache.getRemainingTTL(cacheEntry1.key)).toBe(Infinity);
+			expect(cache.getRemainingTTL(cacheEntry.key)).toBe(Infinity);
 		});
 
 		test('Should return 0 when getting remaining TTL of a non-existing entry', async () => {
@@ -695,22 +693,21 @@ describe('LRU cache provider test suite', () => {
 		});
 
 		test('Should return negative number when getting remaining TTL of an expired entry', async () => {
-			const cacheEntry1 = {
+			const cacheEntry = {
 				key: 1,
 				val: 1,
 				ttl: 10
 			};
-			cache.set(cacheEntry1.key, cacheEntry1.val, cacheEntry1.ttl);
+			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
-			await sleep(cacheEntry1.ttl + 10);
-
-			expect(cache.getRemainingTTL(cacheEntry1.key)).toBeLessThanOrEqual(0);
+			await sleep(cacheEntry.ttl + 10);
+			expect(cache.getRemainingTTL(cacheEntry.key)).toBeLessThanOrEqual(0);
 		});
 	});
 
 	describe('LRU cache size tracking functionality', () => {
 		let app: NestApplication;
-		let cache: LruCache;
+		let cache: LRUCache<{}, {}>;
 		const max = 20;
 		const maxSize = 400;
 		const maxEntrySize = 100;
@@ -734,7 +731,7 @@ describe('LRU cache provider test suite', () => {
 			}).compile();
 
 			app = TestingModule.createNestApplication();
-			cache = app.get(LruCache);
+			cache = app.get<LRUCache<{}, {}>>(LRU_CACHE);
 
 			await app.init();
 		});

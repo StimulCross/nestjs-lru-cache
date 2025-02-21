@@ -22,6 +22,13 @@ const namingConvention = [...baseRules.rules['@typescript-eslint/naming-conventi
 				}
 			};
 		}
+
+		if (rule.selector === 'typeLike') {
+			return {
+				selector: 'typeLike',
+				format: ['PascalCase']
+			};
+		}
 	}
 
 	return rule;

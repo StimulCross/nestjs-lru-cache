@@ -1,7 +1,7 @@
 import { Inject, Logger } from '@nestjs/common';
-import { CACHE_INSTANCE, CACHE_INSTANCE_ID_PROPERTY } from '../constants';
+import { type LRUCache } from 'lru-cache';
+import { CACHE_INSTANCE, CACHE_INSTANCE_ID_PROPERTY, LRU_CACHE } from '../constants';
 import { type CacheArgumentOptions, type CachedDecoratorOptions } from '../interfaces';
-import { LruCache } from '../providers';
 import { isObject, wrapCacheKey } from '../utils';
 
 const logger = new Logger('LruCache', { timestamp: true });
@@ -13,7 +13,7 @@ function createCachedFunction(
 	options: CachedDecoratorOptions
 ) {
 	return function (
-		this: { [CACHE_INSTANCE_ID_PROPERTY]?: number; [CACHE_INSTANCE]?: LruCache<unknown, unknown> },
+		this: { [CACHE_INSTANCE_ID_PROPERTY]?: number; [CACHE_INSTANCE]?: LRUCache<{}, {}> },
 		...args: unknown[]
 	) {
 		if (!this[CACHE_INSTANCE]) {
@@ -48,13 +48,12 @@ function createCachedFunction(
 
 		cacheKey = wrapCacheKey(cacheKey);
 
-		// @ts-ignore TODO later
 		if ((mergedOptions.returnCached ?? true) && this[CACHE_INSTANCE].has(cacheKey, mergedOptions)) {
 			return this[CACHE_INSTANCE].get(cacheKey, mergedOptions);
 		}
 
 		const result: unknown = origFn.apply(this, args);
-		this[CACHE_INSTANCE].set(cacheKey, result, mergedOptions);
+		this[CACHE_INSTANCE].set(cacheKey, result as any, mergedOptions);
 
 		return result;
 	};
@@ -94,7 +93,7 @@ export function Cached<K = any, V = any>(
 		| CachedDecoratorOptions['ttl']
 		| CachedDecoratorOptions['hashFunction'] = {}
 ): MethodDecorator {
-	const injectCache = Inject(LruCache);
+	const injectCache = Inject(LRU_CACHE);
 
 	return (target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor => {
 		injectCache(target, CACHE_INSTANCE);

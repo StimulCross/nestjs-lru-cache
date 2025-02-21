@@ -1,3 +1,8 @@
+/**
+ * The token used to inject the LRUCache instance.
+ */
+export const LRU_CACHE = Symbol('LRU_CACHE');
+
 /** @internal */
 export const LRU_CACHE_OPTIONS = Symbol('LRU_CACHE:OPTIONS');
 

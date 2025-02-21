@@ -1,11 +1,14 @@
-import { type GetOptions, type HasOptions, type SetOptions, type SizeCalculator } from 'lru-cache';
+import { type LRUCache } from 'lru-cache';
 
 /**
  * Options for {@link Cached} decorator.
  *
  * These options will override similar options in {@link LruCacheOptions} for specific method or getter.
  */
-export interface CachedDecoratorOptions<K = any, V = any> extends HasOptions, GetOptions, SetOptions<K, V> {
+export interface CachedDecoratorOptions<K = any, V = any, FC = unknown>
+	extends LRUCache.HasOptions<K, V, FC>,
+		LRUCache.GetOptions<K, V, FC>,
+		LRUCache.SetOptions<K, V, FC> {
 	/**
 	 * Custom hash function.
 	 *
@@ -54,7 +57,7 @@ export interface CachedDecoratorOptions<K = any, V = any> extends HasOptions, Ge
 	 *
 	 * Defaults to the value specified in the {@link LruCacheOptions}.
 	 */
-	sizeCalculation?: SizeCalculator<K, V>;
+	sizeCalculation?: LRUCache.SizeCalculator<K, V>;
 
 	/**
 	 * Max time to live for items before they are considered stale. Note that stale items are NOT preemptively removed

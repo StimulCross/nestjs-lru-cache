@@ -1,4 +1,4 @@
-import { type GetOptions, type HasOptions, type SetOptions, type SizeCalculator } from 'lru-cache';
+import { type LRUCache } from 'lru-cache';
 
 /**
  * Additional cache options to pass as the last argument to the method decorated with {@link Cached} /
@@ -28,7 +28,10 @@ import { type GetOptions, type HasOptions, type SetOptions, type SizeCalculator 
  * });
  * ```
  */
-export interface CacheArgumentOptions<K = unknown, V = unknown> extends HasOptions, GetOptions, SetOptions<K, V> {
+export interface CacheArgumentOptions<K = unknown, V = unknown, FC = unknown>
+	extends LRUCache.HasOptions<K, V, FC>,
+		LRUCache.GetOptions<K, V, FC>,
+		LRUCache.SetOptions<K, V, FC> {
 	/**
 	 * Whether to return the cached value.
 	 *
@@ -46,69 +49,4 @@ export interface CacheArgumentOptions<K = unknown, V = unknown> extends HasOptio
 	 * `useArgumentOptions` in {@link CachedDecoratorOptions} / {@link CachedAsyncDecoratorOptions} to `true`.
 	 */
 	useSharedCache?: boolean;
-
-	/**
-	 * A value for the size of the entry, prevents `sizeCalculation` function call.
-	 */
-	size?: number;
-
-	/**
-	 * A function to calculate size of items. Useful if storing strings or buffers or other items where memory size
-	 * depends on the object itself.
-	 *
-	 * Also note that oversized items do NOT immediately get dropped from the cache, though they will cause faster
-	 * turnover in the storage.
-	 *
-	 * Defaults to the value specified in {@link CachedDecoratorOptions} / {@link CachedAsyncDecoratorOptions}.
-	 */
-	sizeCalculation?: SizeCalculator<K, V>;
-
-	/**
-	 * Max time to live for items before they are considered stale. Note that stale items are NOT preemptively removed
-	 * by default, and MAY live in the cache, contributing to its LRU max, long after they have expired.
-	 *
-	 * Defaults to the value specified in {@link CachedDecoratorOptions} / {@link CachedAsyncDecoratorOptions}.
-	 */
-	ttl?: number;
-
-	/**
-	 * Sets the effective start time for the TTL calculation. Note that this must be a previous value of
-	 * `performance.now()` if supported, or a previous value of `Date.now()` if not.
-	 */
-	start?: number;
-
-	/**
-	 * Set to `true` to suppress calling the `dispose()` function if the entry key is still accessible within the cache.
-	 *
-	 * Defaults to the value specified in {@link CachedDecoratorOptions} / {@link CachedAsyncDecoratorOptions}.
-	 */
-	noDisposeOnSet?: boolean;
-
-	/**
-	 * Do not update the TTL when overwriting an existing item.
-	 *
-	 * Defaults to the value specified in {@link CachedDecoratorOptions} / {@link CachedAsyncDecoratorOptions}.
-	 */
-	noUpdateTTL?: boolean;
-
-	/**
-	 * Whether the age of an entry should be updated on `has()`.
-	 *
-	 * Defaults to the value specified in {@link CachedDecoratorOptions} / {@link CachedAsyncDecoratorOptions}.
-	 */
-	updateAgeOnHas?: boolean;
-
-	/**
-	 * Whether the age of an entry should be updated on `get()`.
-	 *
-	 * Defaults to the value specified in {@link CachedDecoratorOptions} / {@link CachedAsyncDecoratorOptions}.
-	 */
-	updateAgeOnGet?: boolean;
-
-	/**
-	 * Whether to not delete stale items when an entry is accessed with `get()`.
-	 *
-	 * Defaults to the value specified in {@link CachedDecoratorOptions} / {@link CachedAsyncDecoratorOptions}.
-	 */
-	noDeleteOnStaleGet?: boolean;
 }
