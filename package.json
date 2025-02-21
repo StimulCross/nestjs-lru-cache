@@ -1,6 +1,6 @@
 {
 	"name": "nestjs-lru-cache",
-	"version": "0.1.1",
+	"version": "1.0.0-next.0",
 	"description": "NestJS LRU memory cache module.",
 	"repository": "git@github.com:StimulCross/nestjs-lru-cache.git",
 	"license": "MIT",
