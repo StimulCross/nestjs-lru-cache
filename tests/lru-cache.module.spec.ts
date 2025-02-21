@@ -35,11 +35,11 @@ describe('LRU cache module test suite', () => {
 		const ttl = 5000;
 
 		beforeAll(async () => {
-			const TestingModule = await Test.createTestingModule({
-				imports: [OptionsFactoryModule, LruCacheModule.register({ max, ttl })]
+			const testingModule = await Test.createTestingModule({
+				imports: [OptionsFactoryModule, LruCacheModule.register({ max, ttl })],
 			}).compile();
 
-			app = TestingModule.createNestApplication();
+			app = testingModule.createNestApplication();
 
 			await app.init();
 		});
@@ -54,8 +54,8 @@ describe('LRU cache module test suite', () => {
 	});
 
 	describe('LRU cache async options', () => {
-		const max = 10000;
-		const ttl = 50000;
+		const max = 10_000;
+		const ttl = 50_000;
 
 		const testModule = async (app: INestApplication): Promise<void> => {
 			await app.init();
@@ -64,14 +64,12 @@ describe('LRU cache module test suite', () => {
 		};
 
 		test('LRU cache options should be resolved with "useFactory"', async () => {
-			const createOptions = async (): Promise<LruCacheOptions> => {
-				return { max, ttl };
-			};
+			const createOptions = async (): Promise<LruCacheOptions> => ({ max, ttl });
 
-			const TestingModule = await Test.createTestingModule({
-				imports: [LruCacheModule.registerAsync({ useFactory: createOptions })]
+			const testingModule = await Test.createTestingModule({
+				imports: [LruCacheModule.registerAsync({ useFactory: createOptions })],
 			}).compile();
-			const app = TestingModule.createNestApplication();
+			const app = testingModule.createNestApplication();
 			await testModule(app);
 		});
 
@@ -81,42 +79,42 @@ describe('LRU cache module test suite', () => {
 				return { max, ttl };
 			};
 
-			const TestingModule = await Test.createTestingModule({
+			const testingModule = await Test.createTestingModule({
 				imports: [
 					LruCacheModule.registerAsync({
 						imports: [OptionsFactoryModule],
 						inject: [OptionsFactory],
-						useFactory: createOptions
-					})
-				]
+						useFactory: createOptions,
+					}),
+				],
 			}).compile();
-			const app = TestingModule.createNestApplication();
+			const app = testingModule.createNestApplication();
 			await testModule(app);
 		});
 
 		test('LRU cache options should be resolved with "useExisting"', async () => {
-			const TestingModule = await Test.createTestingModule({
+			const testingModule = await Test.createTestingModule({
 				imports: [
 					LruCacheModule.registerAsync({
 						imports: [OptionsFactoryModule],
-						useExisting: OptionsFactory
-					})
-				]
+						useExisting: OptionsFactory,
+					}),
+				],
 			}).compile();
-			const app = TestingModule.createNestApplication();
+			const app = testingModule.createNestApplication();
 			await testModule(app);
 		});
 
 		test('LRU cache options should be resolved with "useClass"', async () => {
-			const TestingModule = await Test.createTestingModule({
+			const testingModule = await Test.createTestingModule({
 				imports: [
 					LruCacheModule.registerAsync({
 						imports: [OptionsFactoryModule],
-						useClass: OptionsFactory
-					})
-				]
+						useClass: OptionsFactory,
+					}),
+				],
 			}).compile();
-			const app = TestingModule.createNestApplication();
+			const app = testingModule.createNestApplication();
 			await testModule(app);
 		});
 	});
@@ -125,12 +123,12 @@ describe('LRU cache module test suite', () => {
 		let app: NestApplication;
 
 		beforeAll(async () => {
-			const TestingModule = await Test.createTestingModule({
+			const testingModule = await Test.createTestingModule({
 				imports: [LruCacheModule.register({ max: 10 })],
-				providers: [CacheConsumer]
+				providers: [CacheConsumer],
 			}).compile();
 
-			app = TestingModule.createNestApplication();
+			app = testingModule.createNestApplication();
 
 			await app.init();
 		});

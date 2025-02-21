@@ -21,9 +21,9 @@ describe('LRU cache provider test suite', () => {
 			console.log(value, key, reason);
 		};
 		const ttlResolution = 10;
+		/* eslint-disable @typescript-eslint/naming-convention */
 		const allowStale = true;
 		const ttlAutopurge = true;
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const noUpdateTTL = true;
 		const fetchMethod: LRUCache.Fetcher<{}, {}> = (key, staleValue, options) => {
 			console.log(key, staleValue, options);
@@ -33,9 +33,10 @@ describe('LRU cache provider test suite', () => {
 		const noDisposeOnSet = true;
 		const updateAgeOnGet = true;
 		const updateAgeOnHas = true;
+		/* eslint-enable @typescript-eslint/naming-convention */
 
 		beforeAll(async () => {
-			const TestingModule = await Test.createTestingModule({
+			const testingModule = await Test.createTestingModule({
 				imports: [
 					LruCacheModule.register({
 						max,
@@ -54,12 +55,12 @@ describe('LRU cache provider test suite', () => {
 						ttlAutopurge,
 						updateAgeOnHas,
 						noUpdateTTL,
-						noDeleteOnFetchRejection
-					})
-				]
+						noDeleteOnFetchRejection,
+					}),
+				],
 			}).compile();
 
-			app = TestingModule.createNestApplication();
+			app = testingModule.createNestApplication();
 			cache = app.get<LRUCache<{}, {}>>(LRU_CACHE);
 
 			await app.init();
@@ -95,11 +96,11 @@ describe('LRU cache provider test suite', () => {
 		const ttl = 5000;
 
 		beforeAll(async () => {
-			const TestingModule = await Test.createTestingModule({
-				imports: [LruCacheModule.register({ max, ttl })]
+			const testingModule = await Test.createTestingModule({
+				imports: [LruCacheModule.register({ max, ttl })],
 			}).compile();
 
-			app = TestingModule.createNestApplication();
+			app = testingModule.createNestApplication();
 			cache = app.get<LRUCache<{}, {}>>(LRU_CACHE);
 
 			await app.init();
@@ -113,12 +114,12 @@ describe('LRU cache provider test suite', () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
-				ttl: Infinity
+				ttl: Infinity,
 			};
 			const cacheEntry2 = {
 				key: 2,
 				val: 2,
-				ttl: Infinity
+				ttl: Infinity,
 			};
 
 			cache.set(cacheEntry1.key, cacheEntry1.val, { ttl: cacheEntry2.ttl });
@@ -140,7 +141,7 @@ describe('LRU cache provider test suite', () => {
 		test('Should get existing entry', async () => {
 			const cacheEntry = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 			cache.set(cacheEntry.key, cacheEntry.val);
 
@@ -154,7 +155,7 @@ describe('LRU cache provider test suite', () => {
 		test('Should peek existing entry', async () => {
 			const cacheEntry = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 			cache.set(cacheEntry.key, cacheEntry.val);
 
@@ -168,7 +169,7 @@ describe('LRU cache provider test suite', () => {
 		test('Should set entry to the cache', async () => {
 			const cacheEntry = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 			cache.set(cacheEntry.key, cacheEntry.val);
 
@@ -179,7 +180,7 @@ describe('LRU cache provider test suite', () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
-				ttl: 100
+				ttl: 100,
 			};
 			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
@@ -192,8 +193,8 @@ describe('LRU cache provider test suite', () => {
 				key: 1,
 				val: 1,
 				options: {
-					ttl: Infinity
-				}
+					ttl: Infinity,
+				},
 			};
 			cache.set(cacheEntry.key, cacheEntry.val, cacheEntry.options);
 
@@ -205,12 +206,12 @@ describe('LRU cache provider test suite', () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
-				ttl: Infinity
+				ttl: Infinity,
 			};
 			const cacheEntry2 = {
 				key: 2,
 				val: 2,
-				ttl: 100
+				ttl: 100,
 			};
 			cache.set(cacheEntry1.key, cacheEntry1.val, { ttl: cacheEntry1.ttl });
 			cache.set(cacheEntry2.key, cacheEntry2.val, { ttl: cacheEntry2.ttl });
@@ -223,12 +224,12 @@ describe('LRU cache provider test suite', () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
-				ttl: 20
+				ttl: 20,
 			};
 			const cacheEntry2 = {
 				key: 2,
 				val: 2,
-				ttl: 20
+				ttl: 20,
 			};
 			cache.set(cacheEntry1.key, cacheEntry1.val, { ttl: cacheEntry1.ttl });
 			cache.set(cacheEntry2.key, cacheEntry2.val, { ttl: cacheEntry2.ttl });
@@ -262,11 +263,11 @@ describe('LRU cache provider test suite', () => {
 		test('Should iterate over keys', async () => {
 			const cacheEntry1 = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 			const cacheEntry2 = {
 				key: 2,
-				val: 2
+				val: 2,
 			};
 
 			cache.set(cacheEntry1.key, cacheEntry1.val);
@@ -284,11 +285,11 @@ describe('LRU cache provider test suite', () => {
 		test('Should iterate over keys in reverse order', async () => {
 			const cacheEntry1 = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 			const cacheEntry2 = {
 				key: 2,
-				val: 2
+				val: 2,
 			};
 
 			cache.set(cacheEntry1.key, cacheEntry1.val);
@@ -306,11 +307,11 @@ describe('LRU cache provider test suite', () => {
 		test('Should iterate over values', async () => {
 			const cacheEntry1 = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 			const cacheEntry2 = {
 				key: 2,
-				val: 2
+				val: 2,
 			};
 
 			cache.set(cacheEntry1.key, cacheEntry1.val);
@@ -328,11 +329,11 @@ describe('LRU cache provider test suite', () => {
 		test('Should iterate over values in reverse order', async () => {
 			const cacheEntry1 = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 			const cacheEntry2 = {
 				key: 2,
-				val: 2
+				val: 2,
 			};
 
 			cache.set(cacheEntry1.key, cacheEntry1.val);
@@ -350,11 +351,11 @@ describe('LRU cache provider test suite', () => {
 		test('Should iterate over entries', async () => {
 			const cacheEntry1 = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 			const cacheEntry2 = {
 				key: 2,
-				val: 2
+				val: 2,
 			};
 
 			cache.set(cacheEntry1.key, cacheEntry1.val);
@@ -378,11 +379,11 @@ describe('LRU cache provider test suite', () => {
 		test('Should iterate over entries in reverse order', async () => {
 			const cacheEntry1 = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 			const cacheEntry2 = {
 				key: 2,
-				val: 2
+				val: 2,
 			};
 
 			cache.set(cacheEntry1.key, cacheEntry1.val);
@@ -468,11 +469,11 @@ describe('LRU cache provider test suite', () => {
 		test('Should fetch an entry', async () => {
 			const cacheEntry1 = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 			const cacheEntry2 = {
 				key: 2,
-				val: 2
+				val: 2,
 			};
 
 			cache.set(cacheEntry1.key, cacheEntry1.val);
@@ -485,7 +486,7 @@ describe('LRU cache provider test suite', () => {
 		test('Should find an entry', async () => {
 			const cacheEntry = {
 				key: 1,
-				val: 1
+				val: 1,
 			};
 
 			cache.set(cacheEntry.key, cacheEntry.val);
@@ -544,11 +545,11 @@ describe('LRU cache provider test suite', () => {
 		const max = 5;
 
 		beforeAll(async () => {
-			const TestingModule = await Test.createTestingModule({
-				imports: [LruCacheModule.register({ max })]
+			const testingModule = await Test.createTestingModule({
+				imports: [LruCacheModule.register({ max })],
 			}).compile();
 
-			app = TestingModule.createNestApplication();
+			app = testingModule.createNestApplication();
 			cache = app.get<LRUCache<{}, {}>>(LRU_CACHE);
 
 			await app.init();
@@ -581,11 +582,11 @@ describe('LRU cache provider test suite', () => {
 		const ttl = 2000;
 
 		beforeAll(async () => {
-			const TestingModule = await Test.createTestingModule({
-				imports: [LruCacheModule.register({ max, ttl })]
+			const testingModule = await Test.createTestingModule({
+				imports: [LruCacheModule.register({ max, ttl })],
 			}).compile();
 
-			app = TestingModule.createNestApplication();
+			app = testingModule.createNestApplication();
 			cache = app.get<LRUCache<{}, {}>>(LRU_CACHE);
 
 			await app.init();
@@ -614,7 +615,7 @@ describe('LRU cache provider test suite', () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
-				ttl: 10
+				ttl: 10,
 			};
 			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
@@ -627,7 +628,7 @@ describe('LRU cache provider test suite', () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
-				ttl: 50
+				ttl: 50,
 			};
 			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
@@ -640,7 +641,7 @@ describe('LRU cache provider test suite', () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
-				ttl: 50
+				ttl: 50,
 			};
 			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
@@ -654,17 +655,17 @@ describe('LRU cache provider test suite', () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
-				ttl: 20
+				ttl: 20,
 			};
 			const cacheEntry2 = {
 				key: 2,
 				val: 2,
-				ttl: 20
+				ttl: 20,
 			};
 			const cacheEntry3 = {
 				key: 3,
 				val: 3,
-				ttl: Infinity
+				ttl: Infinity,
 			};
 			cache.set(cacheEntry1.key, cacheEntry1.val, { ttl: cacheEntry1.ttl });
 			cache.set(cacheEntry2.key, cacheEntry2.val, { ttl: cacheEntry2.ttl });
@@ -681,7 +682,7 @@ describe('LRU cache provider test suite', () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
-				ttl: Infinity
+				ttl: Infinity,
 			};
 			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
@@ -696,7 +697,7 @@ describe('LRU cache provider test suite', () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
-				ttl: 10
+				ttl: 10,
 			};
 			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
 
@@ -715,22 +716,22 @@ describe('LRU cache provider test suite', () => {
 		const fiftyBytesObject = {
 			str: 'abcdefghi',
 			bool: true,
-			int: 1000
+			int: 1000,
 		};
 
 		beforeAll(async () => {
-			const TestingModule = await Test.createTestingModule({
+			const testingModule = await Test.createTestingModule({
 				imports: [
 					LruCacheModule.register({
 						max,
 						maxEntrySize,
 						maxSize,
-						sizeCalculation: sizeCalculationFn
-					})
-				]
+						sizeCalculation: sizeCalculationFn,
+					}),
+				],
 			}).compile();
 
-			app = TestingModule.createNestApplication();
+			app = testingModule.createNestApplication();
 			cache = app.get<LRUCache<{}, {}>>(LRU_CACHE);
 
 			await app.init();

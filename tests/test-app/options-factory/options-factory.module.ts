@@ -3,6 +3,6 @@ import { OptionsFactory } from './options-factory';
 
 @Module({
 	providers: [OptionsFactory],
-	exports: [OptionsFactory]
+	exports: [OptionsFactory],
 })
 export class OptionsFactoryModule {}

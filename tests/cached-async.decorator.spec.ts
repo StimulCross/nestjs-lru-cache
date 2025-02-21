@@ -14,12 +14,12 @@ describe('Cached async decorator test suite', () => {
 	let cache: LRUCache<any, any>;
 
 	beforeEach(async () => {
-		const TestingModule = await Test.createTestingModule({
+		const testingModule = await Test.createTestingModule({
 			imports: [LruCacheModule.register({ ttl: 1000, max: 1000 })],
-			providers: [IsolatedCacheTestService, TestService]
+			providers: [IsolatedCacheTestService, TestService],
 		}).compile();
 
-		app = TestingModule.createNestApplication();
+		app = testingModule.createNestApplication();
 		cache = app.get<LRUCache<any, any>>(LRU_CACHE);
 
 		await app.init();
@@ -258,8 +258,8 @@ describe('Cached async decorator test suite', () => {
 		expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.stringContaining(
-				'Failed to get the cache instance in method NonInjectableCacheService.getRandomNumberAsync()'
-			)
+				'Failed to get the cache instance in method NonInjectableCacheService.getRandomNumberAsync()',
+			),
 		);
 
 		loggerWarnSpy.mockRestore();

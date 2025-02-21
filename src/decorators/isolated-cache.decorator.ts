@@ -21,14 +21,14 @@ export function IsolatedCache() {
 					enumerable: false,
 					writable: false,
 					configurable: true,
-					value: target.name
+					value: target.name,
 				});
 
 				Object.defineProperty(this, CACHE_INSTANCE_ID_PROPERTY, {
 					enumerable: false,
 					writable: false,
 					configurable: false,
-					value: ++target[CACHE_INSTANCES_PROPERTY]
+					value: ++target[CACHE_INSTANCES_PROPERTY],
 				});
 			}
 		};

@@ -62,9 +62,9 @@ import { LruCacheModule } from 'nestjs-lru-cache';
 	imports: [
 		LruCacheModule.register({
 			isGlobal: true,
-			max: 10000
-		})
-	]
+			max: 10000,
+		}),
+	],
 })
 export class AppModule {}
 ```
@@ -79,7 +79,7 @@ import { LruCacheModule, LruCacheOptions } from 'nestjs-lru-cache';
 	imports: [
 		ConfigModule.register({
 			isGlobal: true,
-			cache: true
+			cache: true,
 		}),
 		LruCacheModule.registerAsync({
 			isGlobal: true,
@@ -87,11 +87,11 @@ import { LruCacheModule, LruCacheOptions } from 'nestjs-lru-cache';
 			useFactory: async (configService: ConfigService): Promise<LruCacheOptions> => {
 				return {
 					max: Number(configService.get('CACHE_MAX')),
-					ttl: Number(configService.get('CACHE_TTL'))
+					ttl: Number(configService.get('CACHE_TTL')),
 				};
-			}
-		})
-	]
+			},
+		}),
+	],
 })
 export class AppModule {}
 ```
@@ -115,7 +115,7 @@ export class OptionsFactory implements LruCacheOptionsFactory {
 	createLruCacheOptions(): LruCacheOptions {
 		return {
 			max: 10000,
-			ttl: 10000
+			ttl: 10000,
 		};
 	}
 }
@@ -134,9 +134,9 @@ import { LruCacheModule } from 'nestjs-lru-cache';
 		OptionsFactoryModule,
 		LruCacheModule.registerAsync({
 			isGlobal: true,
-			useExisting: OptionsFactory
-		})
-	]
+			useExisting: OptionsFactory,
+		}),
+	],
 })
 export class AppModule {}
 ```
@@ -230,7 +230,7 @@ interface LRUCache<K, V, FC> {
 	pop(): V | undefined;
 	find(
 		fn: (v: V, k: K, self: LRUCache<K, V, FC>) => boolean,
-		getOptions?: LRUCache.GetOptions<K, V, FC>
+		getOptions?: LRUCache.GetOptions<K, V, FC>,
 	): V | undefined;
 	info(key: K): LRUCache.Entry<V> | undefined;
 	dump(): [K, LRUCache.Entry<V>][];
@@ -253,7 +253,7 @@ interface LRUCache<K, V, FC> {
 			? LRUCache.FetchOptions<K, V, FC>
 			: FC extends undefined | void
 			? LRUCache.FetchOptionsNoContext<K, V>
-			: LRUCache.FetchOptionsWithContext<K, V, FC>
+			: LRUCache.FetchOptionsWithContext<K, V, FC>,
 	): Promise<undefined | V>;
 	forceFetch(
 		k: K,
@@ -261,7 +261,7 @@ interface LRUCache<K, V, FC> {
 			? LRUCache.FetchOptions<K, V, FC>
 			: FC extends undefined | void
 			? LRUCache.FetchOptionsNoContext<K, V>
-			: LRUCache.FetchOptionsWithContext<K, V, FC>
+			: LRUCache.FetchOptionsWithContext<K, V, FC>,
 	): Promise<V>;
 	memo(
 		k: K,
@@ -269,7 +269,7 @@ interface LRUCache<K, V, FC> {
 			? LRUCache.MemoOptions<K, V, FC>
 			: FC extends undefined | void
 			? LRUCache.MemoOptionsNoContext<K, V>
-			: LRUCache.MemoOptionsWithContext<K, V, FC>
+			: LRUCache.MemoOptionsWithContext<K, V, FC>,
 	): V;
 }
 ```

@@ -15,12 +15,12 @@ describe('Cached decorator test suite', () => {
 	let cache: LRUCache<any, any>;
 
 	beforeEach(async () => {
-		const TestingModule = await Test.createTestingModule({
+		const testingModule = await Test.createTestingModule({
 			imports: [LruCacheModule.register({ isGlobal: true, ttl: 1000, max: 1000 })],
-			providers: [IsolatedCacheTestService, TestService]
+			providers: [IsolatedCacheTestService, TestService],
 		}).compile();
 
-		app = TestingModule.createNestApplication();
+		app = testingModule.createNestApplication();
 		cache = app.get<LRUCache<any, any>>(LRU_CACHE);
 
 		await app.init();
@@ -49,7 +49,7 @@ describe('Cached decorator test suite', () => {
 	test('Cached method should cache the result', async () => {
 		const isolatedCacheTestService = await app.resolve(IsolatedCacheTestService);
 		const cachedKey = wrapCacheKey(
-			`${IsolatedCacheTestService.name}_${isolatedCacheTestService[CACHE_INSTANCE_ID_PROPERTY]}.getRandomNumber`
+			`${IsolatedCacheTestService.name}_${isolatedCacheTestService[CACHE_INSTANCE_ID_PROPERTY]}.getRandomNumber`,
 		);
 
 		const val = isolatedCacheTestService.getRandomNumber();
@@ -59,7 +59,7 @@ describe('Cached decorator test suite', () => {
 	test('Cached method should cache the result only for the specified TTL', async () => {
 		const isolatedCacheTestService = await app.resolve(IsolatedCacheTestService);
 		const cachedKey = wrapCacheKey(
-			`${IsolatedCacheTestService.name}_${isolatedCacheTestService[CACHE_INSTANCE_ID_PROPERTY]}.getRandomNumber`
+			`${IsolatedCacheTestService.name}_${isolatedCacheTestService[CACHE_INSTANCE_ID_PROPERTY]}.getRandomNumber`,
 		);
 
 		const val = isolatedCacheTestService.getRandomNumber();
@@ -211,8 +211,8 @@ describe('Cached decorator test suite', () => {
 		expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.stringContaining(
-				'Failed to get the cache instance in method NonInjectableCacheService.getRandomNumber()'
-			)
+				'Failed to get the cache instance in method NonInjectableCacheService.getRandomNumber()',
+			),
 		);
 
 		loggerWarnSpy.mockRestore();

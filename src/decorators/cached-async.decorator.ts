@@ -10,7 +10,7 @@ function createCachedAsyncFunction(
 	target: object,
 	propertyKey: string | symbol,
 	origFn: Function,
-	options: CachedAsyncDecoratorOptions
+	options: CachedAsyncDecoratorOptions,
 ) {
 	return async function (
 		this: { [CACHE_INSTANCE_ID_PROPERTY]?: number; [CACHE_INSTANCE]?: LRUCache<any, any> },
@@ -19,8 +19,8 @@ function createCachedAsyncFunction(
 		if (!this[CACHE_INSTANCE]) {
 			logger.warn(
 				`Failed to get the cache instance in method ${target.constructor.name}.${String(
-					propertyKey
-				)}(). This may be because the class using the @CachedAsync decorator has not been registered as a provider in the NestJS module, and therefore is not available in the DI container. This method's results will not be cached.`
+					propertyKey,
+				)}(). This may be because the class using the @CachedAsync decorator has not been registered as a provider in the NestJS module, and therefore is not available in the DI container. This method's results will not be cached.`,
 			);
 			return await (origFn.apply(this, args) as Promise<unknown>);
 		}
@@ -107,7 +107,7 @@ export function CachedAsync<K = any, V = any>(
 	optionsOrHashFunctionOrTtl:
 		| CachedAsyncDecoratorOptions<K, V>
 		| CachedAsyncDecoratorOptions['ttl']
-		| CachedAsyncDecoratorOptions['hashFunction'] = {}
+		| CachedAsyncDecoratorOptions['hashFunction'] = {},
 ): MethodDecorator {
 	const injectCache = Inject(LRU_CACHE);
 

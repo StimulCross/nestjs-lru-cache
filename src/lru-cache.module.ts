@@ -5,7 +5,7 @@ import {
 	type LruCacheAsyncModuleOptions,
 	type LruCacheModuleOptions,
 	type LruCacheOptions,
-	type LruCacheOptionsFactory
+	type LruCacheOptionsFactory,
 } from './interfaces';
 
 /**
@@ -25,19 +25,19 @@ export class LruCacheModule {
 	public static register(options: LruCacheModuleOptions): DynamicModule {
 		const optionsProvider: Provider<LruCacheModuleOptions> = {
 			provide: LRU_CACHE_OPTIONS,
-			useValue: options
+			useValue: options,
 		};
 
 		const lruCache: Provider<LRUCache<any, any>> = {
 			provide: LRU_CACHE,
-			useValue: new LRUCache(options)
+			useValue: new LRUCache(options),
 		};
 
 		return {
 			global: options.isGlobal,
 			module: LruCacheModule,
 			providers: [optionsProvider, lruCache],
-			exports: [LRU_CACHE]
+			exports: [LRU_CACHE],
 		};
 	}
 
@@ -52,7 +52,7 @@ export class LruCacheModule {
 		const lruCache: Provider<LRUCache<any, any>> = {
 			provide: LRU_CACHE,
 			useFactory: (opts: LruCacheOptions) => new LRUCache(opts),
-			inject: [LRU_CACHE_OPTIONS]
+			inject: [LRU_CACHE_OPTIONS],
 		};
 
 		return {
@@ -60,7 +60,7 @@ export class LruCacheModule {
 			imports: options.imports ?? [],
 			module: LruCacheModule,
 			providers: [...LruCacheModule._createOptionsProviders(options), lruCache],
-			exports: [LRU_CACHE]
+			exports: [LRU_CACHE],
 		};
 	}
 
@@ -73,8 +73,8 @@ export class LruCacheModule {
 			LruCacheModule._createOptionsProvider(options),
 			{
 				provide: options.useClass!,
-				useClass: options.useClass!
-			}
+				useClass: options.useClass!,
+			},
 		];
 	}
 
@@ -83,14 +83,14 @@ export class LruCacheModule {
 			return {
 				provide: LRU_CACHE_OPTIONS,
 				useFactory: options.useFactory,
-				inject: options.inject ?? []
+				inject: options.inject ?? [],
 			};
 		}
 
 		return {
 			provide: LRU_CACHE_OPTIONS,
 			useFactory: async (factory: LruCacheOptionsFactory) => await factory.createLruCacheOptions(),
-			inject: [options.useExisting ?? options.useClass!]
+			inject: [options.useExisting ?? options.useClass!],
 		};
 	}
 }

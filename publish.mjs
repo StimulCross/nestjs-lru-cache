@@ -1,31 +1,26 @@
-#!/usr/bin/env node
-
-// TAKEN FROM https://github.com/twurple/twurple/blob/main/publish.mjs
-
-import { exec as _exec, spawn } from 'child_process';
-import util from 'util';
+import { exec as _exec, spawn } from 'node:child_process';
+import util from 'node:util';
 
 const exec = util.promisify(_exec);
 
 async function runYarn(args) {
-	const isWindows = /^win/.test(process.platform);
-	return runAndPassOutput(isWindows ? 'yarn.cmd' : 'yarn', args);
+	const isWindows = process.platform.startsWith('win');
+	return await runAndPassOutput(isWindows ? 'yarn.cmd' : 'yarn', args);
 }
 
 async function runNpm(args) {
-	const isWindows = /^win/.test(process.platform);
-	return runAndPassOutput(isWindows ? 'npm.cmd' : 'npm', args);
+	const isWindows = process.platform.startsWith('win');
+	return await runAndPassOutput(isWindows ? 'npm.cmd' : 'npm', args);
 }
 
 async function runAndPassOutput(cmd, args) {
-	return new Promise(resolve => {
+	return await new Promise(resolve => {
 		const proc = spawn(cmd, args, {
-			stdio: 'inherit'
+			stdio: 'inherit',
 		});
 		proc.on('exit', code => {
 			if (code) {
-				console.error(`subprocess exited with code ${code}; cmdline: ${[cmd, ...args].join(' ')}`);
-				process.exit(1);
+				throw new Error(`subprocess exited with code ${code}; cmdline: ${[cmd, ...args].join(' ')}`);
 			} else {
 				resolve();
 			}
@@ -39,9 +34,7 @@ const remoteRev = (await exec('git rev-parse "@{u}"')).stdout.trimEnd();
 const baseRev = (await exec('git merge-base "@" "@{u}"')).stdout.trimEnd();
 
 if (localRev !== remoteRev && remoteRev !== baseRev) {
-	console.log({ localRev, remoteRev, baseRev });
-	console.error('Your local repository is out of date; please pull');
-	process.exit(1);
+	throw new Error('Your local repository is out of date; please pull');
 }
 
 await runYarn(['rebuild']);
@@ -50,10 +43,6 @@ await runYarn(['format:check']);
 
 const versionType = process.argv[2] ?? 'patch';
 
-await runNpm(['version', '--commit-hooks', 'false', '--preid', 'pre', versionType, '-m', 'build: release version %v']);
+await runNpm(['version', '--commit-hooks', 'false', '--preid', 'pre', versionType, '-m', 'build: release version %s']);
 
-if (versionType.startsWith('pre')) {
-	await runNpm(['publish', '--tag', 'next']);
-} else {
-	await runNpm(['publish']);
-}
+await (versionType.startsWith('pre') ? runNpm(['publish', '--tag', 'next']) : runNpm(['publish']));

@@ -1,3 +1,3 @@
 module.exports = {
-	extends: ['@stimulcross/commitlint-config']
+	extends: ['@stimulcross/commitlint-config'],
 };

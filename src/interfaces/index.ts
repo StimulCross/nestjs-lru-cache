@@ -3,7 +3,7 @@ export { LruCacheOptionsFactory } from './lru-cache-options-factory.interface';
 export {
 	LruCacheAsyncModuleOptions,
 	LruCacheModuleOptions,
-	LruCacheModuleExtraOptions
+	LruCacheModuleExtraOptions,
 } from './lru-cache-module-options.interface';
 export { CachedDecoratorOptions } from './cached-decorator-options.interface';
 export { CachedAsyncDecoratorOptions } from './cached-async-decorator-options.interface';
