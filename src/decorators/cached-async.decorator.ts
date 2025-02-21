@@ -48,7 +48,7 @@ function createCachedAsyncFunction(
 
 		cacheKey = wrapCacheKey(cacheKey);
 
-		if ((mergedOptions.returnCached ?? true) && this[CACHE_INSTANCE].has(cacheKey, mergedOptions)) {
+		if (!mergedOptions.ignoreCached && this[CACHE_INSTANCE].has(cacheKey, mergedOptions)) {
 			const cachedVal: unknown = this[CACHE_INSTANCE].get(cacheKey, mergedOptions);
 
 			if (cachedVal instanceof Promise) {

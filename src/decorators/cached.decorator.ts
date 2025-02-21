@@ -48,7 +48,7 @@ function createCachedFunction(
 
 		cacheKey = wrapCacheKey(cacheKey);
 
-		if ((mergedOptions.returnCached ?? true) && this[CACHE_INSTANCE].has(cacheKey, mergedOptions)) {
+		if (!mergedOptions.ignoreCached && this[CACHE_INSTANCE].has(cacheKey, mergedOptions)) {
 			return this[CACHE_INSTANCE].get(cacheKey, mergedOptions);
 		}
 

@@ -168,20 +168,20 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.get(cacheKey)).toBe(undefined);
 	});
 
-	test('Cached async method should return new value if "returnCached" was set to `false` in argument options', async () => {
+	test('Cached async method should return new value if "ignoreCached" was set to `true` in argument options', async () => {
 		const testService = await app.resolve(TestService);
 		const promise1 = testService.getRandomNumberAsyncWithOptions();
 		const promise2 = testService.getRandomNumberAsyncWithOptions();
-		const promise3 = testService.getRandomNumberAsyncWithOptions({ returnCached: false });
+		const promise3 = testService.getRandomNumberAsyncWithOptions({ ignoreCached: true });
 
 		expect(await promise1).toBe(await promise2);
 		expect(await promise1).not.toBe(await promise3);
 	});
 
-	test('Cached async method should return cached value if "returnCached" was set to `true` in argument options', async () => {
+	test('Cached async method should return cached value if "ignoreCached" is falsy in argument options', async () => {
 		const testService = await app.resolve(TestService);
 		const promise1 = testService.getRandomNumberAsyncWithOptions();
-		const promise2 = testService.getRandomNumberAsyncWithOptions({ returnCached: true });
+		const promise2 = testService.getRandomNumberAsyncWithOptions({ ignoreCached: false });
 
 		expect(await promise1).toBe(await promise2);
 	});

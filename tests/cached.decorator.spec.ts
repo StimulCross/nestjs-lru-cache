@@ -145,18 +145,18 @@ describe('Cached decorator test suite', () => {
 		expect(cache.get(cacheKey)).toBe(undefined);
 	});
 
-	test('Cached method should return new value if "returnCached" was set to `false` in argument options', async () => {
+	test('Cached method should return new value if "ignoreCached" was set to `true` in argument options', async () => {
 		const testService = await app.resolve(TestService);
 		const val1 = testService.getRandomNumberWithOptions();
-		const val2 = testService.getRandomNumberWithOptions({ returnCached: false });
+		const val2 = testService.getRandomNumberWithOptions({ ignoreCached: true });
 
 		expect(val2).not.toBe(val1);
 	});
 
-	test('Cached method should return cached value if "returnCached" was set to `true` in argument options', async () => {
+	test('Cached method should return cached value if "ignoreCached" is falsy in argument options', async () => {
 		const testService = await app.resolve(TestService);
 		const val1 = testService.getRandomNumberWithOptions();
-		const val2 = testService.getRandomNumberWithOptions({ returnCached: true });
+		const val2 = testService.getRandomNumberWithOptions({ ignoreCached: false });
 
 		expect(val2).toBe(val1);
 	});

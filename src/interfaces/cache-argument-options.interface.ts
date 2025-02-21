@@ -33,14 +33,12 @@ export interface CacheArgumentOptions<K = unknown, V = unknown, FC = unknown>
 		LRUCache.GetOptions<K, V, FC>,
 		LRUCache.SetOptions<K, V, FC> {
 	/**
-	 * Whether to return the cached value.
+	 * Whether to ignore the cached value.
 	 *
-	 * Set this to `false` to ignore cached value and call the original method. The resulting value will replace the
-	 * previous one in the cache as usual.
-	 *
-	 * @default true
+	 * Set this to `true` to ignore the cached value and call the original method. The result of the method will
+	 * replace the previous value in the cache as usual.
 	 */
-	returnCached?: boolean;
+	ignoreCached?: boolean;
 
 	/**
 	 * Makes the decorated method to use the shared cache across multiple class instances for one specific method call.

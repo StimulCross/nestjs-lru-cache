@@ -484,7 +484,7 @@ The `@CachedAsync` decorator accepts the same [options](#cached-options) as the 
 
 ```ts
 interface CacheArgumentOptions {
-	returnCached?: boolean;
+	ignoreCached?: boolean;
 	useSharedCache?: boolean;
 	ttl?: number;
 	size?: number;
@@ -501,7 +501,7 @@ Argument options are a way to change caching behavior for **one specific method 
 
 Some options listed below override similar [options](#cached-options) in the decorator. If they are not specified here, the decorator options will be used.
 
--   `returnCached` - Whether to return the cached value. If set to `false`, the original method will be called even if the cached result is available in the cache. The new value replaces the cached one as usual. Defaults to `true`.
+-   `ignoreCached` – Specifies whether to ignore the cached value. When set to `true`, the original method is executed regardless of a cached result, and the new result then replaces the cached one. The default value is `false`.
 -   `useSharedCache` - Whether a specific method call should use the shared cache across multiple class instances, even if [@IsolatedCache](#isolatedcache) decorator has been applied to the class. Defaults to the value specified in the [@Cached decorator options](#cached-options).
 -   `ttl` - Max time to live for entries before they are considered stale.
 -   `size` - The size of entry to add. Prevents calling the `sizeCalculation` function and just use the specified number if it is a positive integer.
@@ -512,11 +512,12 @@ Some options listed below override similar [options](#cached-options) in the dec
 -   `updateAgeOnHas` - Whether the age of an entry should be updated on `has()` (when the decorator checks if the decorated getter/method has a cached result).
 -   `noDeleteOnStaleGet` - Setting to `true` will cause stale entries to remain in the cache, until they are explicitly deleted with `delete(key)`, or retrieved with `noDeleteOnStaleGet` set to `false`.
 
-To be able to use argument options, you _must_ set `useArgumentOptions` to `true` in the decorator options. Otherwise, they will be ignored.
+> [!IMPORTANT]
+> To enable argument options, `useArgumentOptions` must be set to `true` in the decorator options; otherwise, they will be ignored.
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import { Cached, CachedAsync, CacheArgumentOptions } from 'nestjs-lru-cache';
+import { Cached, CacheArgumentOptions, CachedAsyncArgumentOptions } from 'nestjs-lru-cache';
 
 @Injectable()
 export class AnyCustomProvider {
@@ -526,26 +527,25 @@ export class AnyCustomProvider {
 	}
 
 	@CachedAsync({ ttl: 5000, useArgumentOptions: true })
-	public async getUserById(id: number, _options?: CacheArgumentOptions): Promise<User> {
+	public async getUserById(id: number, _options?: CachedAsyncArgumentOptions): Promise<User> {
 		// ...
 	}
 }
 ```
 
-After enabling `useArgumentOptions`, you can declare the argument options as the last optional parameter of the decorated method. **Only the last argument will be considered as a potential cache options object**.
+Once `useArgumentOptions` is enabled, you can pass an object with cache options as the **final, optional parameter** of the decorated method. **Only the last argument is evaluated as a potential cache options object.**
 
 ```ts
-// You can use the decorated method as usual:
+// Invoke the method as usual:
 anyCustomProvider.getRandomNumber();
 // ->  0.19166009286482677
 
-// Call again to return the cached result:
+// Subsequent calls return the cached value:
 anyCustomProvider.getRandomNumber();
 // ->  0.19166009286482677
 
-// And you can pass `returnCached: false` to ignore
-// the cached value and get a new one:
-anyCustomProvider.getRandomNumber({ returnCached: false });
+// Providing { ignoreCached: true } bypasses the cache and fetches a new value:
+anyCustomProvider.getRandomNumber({ ignoreCached: true });
 // ->  0.24774185142387612
 ```
 
