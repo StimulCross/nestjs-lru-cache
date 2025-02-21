@@ -2,14 +2,11 @@
 	"name": "nestjs-lru-cache",
 	"version": "0.1.1",
 	"description": "NestJS LRU memory cache module.",
-	"publishConfig": {
-		"access": "public"
-	},
+	"repository": "git@github.com:StimulCross/nestjs-lru-cache.git",
+	"license": "MIT",
+	"author": "Stimul Cross <stimulcross@gmail.com>",
 	"main": "./lib/index.js",
 	"types": "./lib/index.d.ts",
-	"repository": "git@github.com:StimulCross/nestjs-lru-cache.git",
-	"author": "Stimul Cross <stimulcross@gmail.com>",
-	"license": "MIT",
 	"files": [
 		"README.md",
 		"LICENSE",
@@ -29,9 +26,6 @@
 		"test:cov": "jest --config jest.config.json --runInBand --coverage",
 		"test:cov:verbose": "jest --config jest.config.json --runInBand --coverage --verbose",
 		"prepare": "husky install"
-	},
-	"engines": {
-		"node": ">=20"
 	},
 	"peerDependencies": {
 		"@nestjs/common": "*",
@@ -65,5 +59,11 @@
 		"ts-jest": "^29.2.5",
 		"tslib": "^2.8.1",
 		"typescript": "^5.7.3"
+	},
+	"engines": {
+		"node": ">=20"
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }
