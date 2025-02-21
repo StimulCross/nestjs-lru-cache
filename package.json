@@ -33,12 +33,10 @@
 	"engines": {
 		"node": ">=20"
 	},
-	"dependencies": {
-		"lru-cache": "^11.0.2"
-	},
 	"peerDependencies": {
 		"@nestjs/common": "*",
 		"@nestjs/core": "*",
+		"lru-cache": "^11",
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "*"
 	},

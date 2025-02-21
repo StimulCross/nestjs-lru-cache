@@ -23,19 +23,19 @@
 Using **npm**:
 
 ```
-npm i --save nestjs-lru-cache
+npm i --save nestjs-lru-cache lru-cache
 ```
 
 Using **yarn**:
 
 ```
-yarn add nestjs-lru-cache
+yarn add nestjs-lru-cache lru-cache
 ```
 
 Using **pnpm**:
 
 ```
-pnpm add nestjs-lru-cache
+pnpm add nestjs-lru-cache lru-cache
 ```
 
 ## Introduction
