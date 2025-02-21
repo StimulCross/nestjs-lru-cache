@@ -7,31 +7,32 @@ import { type CachedDecoratorOptions } from './cached-decorator-options.interfac
  */
 export interface CachedAsyncDecoratorOptions<K = any, V = any> extends CachedDecoratorOptions<K, V> {
 	/**
-	 * Caches a promise returned by a decorated async method until it will be resolved.
+	 * Caches a promise returned by the decorated async method until it is resolved.
 	 *
-	 * If the decorated method will be called multiple times, the first call will cache the promise, and all subsequent
-	 * calls will return the cached promise instead of creating a new one.
+	 * If the decorated method is called multiple times before the promise resolves, the first call will cache
+	 * the promise, and all subsequent calls will return the same cached promise instead of creating a new one.
 	 *
-	 * This behavior would be useful to call rate-limited third-party APIs to avoid wasting limits, or for complex
-	 * database queries to maintain performance.
+	 * This behavior is useful for calling rate-limited third-party APIs to avoid exceeding limits or for running
+	 * complex database queries to improve performance.
 	 *
-	 * After the promise resolution the result will also be cached. In order to not cache the promise result, you can
-	 * set `cachePromiseResult` in {@link CachedAsyncDecoratorOptions} to `false`.
+	 * Once the promise resolves, the result can also be cached. To disable caching of the promise's result,
+	 * set `cachePromiseResult` to `false` in {@link CachedAsyncDecoratorOptions}.
 	 *
-	 * When the promise result is caching, the TTL resets to the specified number in {@link CachedAsyncDecoratorOptions},
-	 * or to the number specified in {@link LruCacheOptions}. If you want the promise and its result to live
-	 * within the same TTL number, you can set `noUpdateTTL` option in {@link CachedAsyncDecoratorOptions} to `true`.
+	 * When the promise result is cached, the TTL resets either to the value specified in
+	 * {@link CachedAsyncDecoratorOptions} (if specified) or to the value specified in {@link LruCacheOptions}.
+	 * If you want the promise and its result to share the same TTL, set the `noUpdateTTL` option in
+	 * {@link CachedAsyncDecoratorOptions} to `true`.
 	 *
 	 * @default true
 	 */
 	cachePromise?: boolean;
 
 	/**
-	 * Caches the promise result after the promise resolution.
+	 * Caches the result of a resolved promise.
 	 *
-	 * When the promise result is caching, the TTL resets to the specified number in {@link CachedAsyncDecoratorOptions},
-	 * or to the number specified in {@link LruCacheOptions}. If you want the promise and its result to live
-	 * within one TTL, you can set `noUpdateTTL` option in {@link CachedAsyncDecoratorOptions} to `true`.
+	 * When the promise result is cached, the TTL resets to the value specified in {@link CachedAsyncDecoratorOptions},
+	 * or to the value specified in {@link LruCacheOptions}. If you want the promise and its result to live within
+	 * the same TTL, set the `noUpdateTTL` option in {@link CachedAsyncDecoratorOptions} to `true`.
 	 *
 	 * @default true
 	 */
