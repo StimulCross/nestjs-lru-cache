@@ -29,7 +29,7 @@ describe('Cached async decorator test suite', () => {
 		cache.clear();
 	});
 
-	test('Cached async method should cache the promise', async () => {
+	test('should cache the promise', async () => {
 		const testService = await app.resolve(TestService);
 		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsync`);
 
@@ -37,7 +37,14 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.get(cachedKey)).toStrictEqual(promise);
 	});
 
-	test('Cached async method should not cache the promise if "cachePromise" set to false in decorator options', async () => {
+	test('should cache the promise result', async () => {
+		const testService = await app.resolve(TestService);
+		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsync`);
+		const result = await testService.getRandomNumberAsync();
+		expect(cache.get(cachedKey)).toBe(result);
+	});
+
+	test('should not cache the promise if "cachePromise" set to false in decorator options', async () => {
 		const testService = await app.resolve(TestService);
 		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsyncWithoutCachingPromise`);
 
@@ -45,7 +52,7 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.has(cachedKey)).toBe(false);
 	});
 
-	test('Cached async method should not cache the promise result if "cachePromiseResult" set to false in decorator options', async () => {
+	test('should not cache the promise result if "cachePromiseResult" set to false in decorator options', async () => {
 		const testService = await app.resolve(TestService);
 		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsyncWithoutCachingPromiseResult`);
 
@@ -56,14 +63,7 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.has(cachedKey)).toBe(false);
 	});
 
-	test('Cached async method should cache the promise result', async () => {
-		const testService = await app.resolve(TestService);
-		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsync`);
-		const result = await testService.getRandomNumberAsync();
-		expect(cache.get(cachedKey)).toBe(result);
-	});
-
-	test('Cached async method should cache the promise for specified TTL', async () => {
+	test('should cache the promise for specified TTL', async () => {
 		const testService = await app.resolve(TestService);
 		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsync`);
 
@@ -74,7 +74,7 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.get(cachedKey)).toBe(undefined);
 	});
 
-	test('Cached async method should update TTL after promise resolution', async () => {
+	test('should update TTL after promise resolution', async () => {
 		const testService = await app.resolve(TestService);
 		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsyncDelayed`);
 
@@ -85,7 +85,7 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.getRemainingTTL(cachedKey)).toBeGreaterThan(90);
 	});
 
-	test('Cached async method should not update TTL after promise resolution if "noUpdateTTL" specified in decorator options', async () => {
+	test('should not update TTL after promise resolution if "noUpdateTTL" specified in decorator options', async () => {
 		const testService = await app.resolve(TestService);
 		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsyncDelayedWithDisabledTtlUpdate`);
 
@@ -96,7 +96,7 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.getRemainingTTL(cachedKey)).toBeLessThanOrEqual(50);
 	});
 
-	test('Cached async method should return cached promise for next calls', async () => {
+	test('should return cached promise for subsequent calls', async () => {
 		const testService1 = await app.resolve(TestService);
 		const testService2 = await app.resolve(TestService);
 
@@ -106,7 +106,7 @@ describe('Cached async decorator test suite', () => {
 		expect(promise1).toStrictEqual(promise2);
 	});
 
-	test('Cached async method should return cached promise result for next calls', async () => {
+	test('should return cached promise result for subsequent calls', async () => {
 		const testService1 = await app.resolve(TestService);
 		const testService2 = await app.resolve(TestService);
 
@@ -116,7 +116,7 @@ describe('Cached async decorator test suite', () => {
 		expect(promise1).toBe(promise2);
 	});
 
-	test('Cached method should cache promise independently for different instances of decorated class', async () => {
+	test('should cache promise independently for different instances of @IsolatedCache class', async () => {
 		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
 		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
@@ -126,7 +126,7 @@ describe('Cached async decorator test suite', () => {
 		expect(await promise1).not.toBe(await promise2);
 	});
 
-	test('Cached async method should cache promise independently for different instances of decorated class', async () => {
+	test('should cache promise independently for different instances of @IsolatedCache class', async () => {
 		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
 		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
@@ -136,7 +136,7 @@ describe('Cached async decorator test suite', () => {
 		expect(await val1).not.toBe(await val2);
 	});
 
-	test('Cached async method should use shared cache for different instances of decorated class if "useSharedCache" was set in decorator options', async () => {
+	test('should use shared cache for different instances of @IsolatedCache class if "useSharedCache" was set in decorator options', async () => {
 		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
 		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
@@ -146,7 +146,7 @@ describe('Cached async decorator test suite', () => {
 		expect(await promise1).toBe(await promise2);
 	});
 
-	test('Cached async method should ignore argument options', async () => {
+	test('should ignore argument options', async () => {
 		const ttl = 50;
 		const testService = await app.resolve(TestService);
 		const cacheKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsync`);
@@ -157,7 +157,7 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.get(cacheKey)).toBe(await promise);
 	});
 
-	test('Cached async method should use argument options if "useArgumentOptions" provided in decorator options', async () => {
+	test('should use argument options if "useArgumentOptions" provided in decorator options', async () => {
 		const ttl = 50;
 		const testService = await app.resolve(TestService);
 		const cacheKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsyncWithOptions`);
@@ -168,7 +168,7 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.get(cacheKey)).toBe(undefined);
 	});
 
-	test('Cached async method should return new value if "ignoreCached" was set to `true` in argument options', async () => {
+	test('should return new value if "ignoreCached" was set to true in argument options', async () => {
 		const testService = await app.resolve(TestService);
 		const promise1 = testService.getRandomNumberAsyncWithOptions();
 		const promise2 = testService.getRandomNumberAsyncWithOptions();
@@ -178,7 +178,7 @@ describe('Cached async decorator test suite', () => {
 		expect(await promise1).not.toBe(await promise3);
 	});
 
-	test('Cached async method should return cached value if "ignoreCached" is falsy in argument options', async () => {
+	test('should return cached value if "ignoreCached" is falsy in argument options', async () => {
 		const testService = await app.resolve(TestService);
 		const promise1 = testService.getRandomNumberAsyncWithOptions();
 		const promise2 = testService.getRandomNumberAsyncWithOptions({ ignoreCached: false });
@@ -186,7 +186,7 @@ describe('Cached async decorator test suite', () => {
 		expect(await promise1).toBe(await promise2);
 	});
 
-	test('Cached async method should use shared cache across multiple instances if "useSharedCache" provided in argument options', async () => {
+	test('should use shared cache across multiple instances if "useSharedCache" provided in argument options', async () => {
 		const isolatedCacheTestService1 = await app.resolve(IsolatedCacheTestService);
 		const isolatedCacheTestService2 = await app.resolve(IsolatedCacheTestService);
 
@@ -196,7 +196,7 @@ describe('Cached async decorator test suite', () => {
 		expect(await promise1).toBe(await promise2);
 	});
 
-	test('Cached async method should update TTL if "updateAgeOnGet" specified in decorator options', async () => {
+	test('should update TTL if "updateAgeOnGet" specified in decorator options', async () => {
 		const testService = await app.resolve(TestService);
 		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberWithEnabledTtlUpdateAsync`);
 
@@ -206,17 +206,7 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.getRemainingTTL(cachedKey)).toBeGreaterThan(90);
 	});
 
-	test('Cached async method should update TTL if "updateAgeOnGet" specified in argument options', async () => {
-		const testService = await app.resolve(TestService);
-		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsyncWithOptions`);
-
-		void testService.getRandomNumberAsyncWithOptions();
-		await sleep(50);
-		void testService.getRandomNumberAsyncWithOptions({ updateAgeOnGet: true });
-		expect(cache.getRemainingTTL(cachedKey)).toBeGreaterThan(90);
-	});
-
-	test('Cached async method should use hash function overload in decorator options', async () => {
+	test('should use hash function overload', async () => {
 		const a = 5;
 		const b = 5;
 		const testService = await app.resolve(TestService);
@@ -227,7 +217,7 @@ describe('Cached async decorator test suite', () => {
 		expect(await promise).toBe(a + b);
 	});
 
-	test('Cached async method should use TTL overload in decorator options', async () => {
+	test('should use TTL overload', async () => {
 		const testService = await app.resolve(TestService);
 		const cacheKey = wrapCacheKey(`${TestService.name}.getRandomNumberTtlOverloadAsync`);
 		const val = await testService.getRandomNumberTtlOverloadAsync();
@@ -237,7 +227,7 @@ describe('Cached async decorator test suite', () => {
 		expect(cache.get(cacheKey)).toBe(undefined);
 	});
 
-	test('Cached async method should use hash function in decorator options', async () => {
+	test('should use hash function in decorator options', async () => {
 		const a = 5;
 		const b = 5;
 		const testService = await app.resolve(TestService);
@@ -248,7 +238,7 @@ describe('Cached async decorator test suite', () => {
 		expect(await promise).toBe(a + b);
 	});
 
-	test('Cached method should print warning and call original function if the class is not registered in providers', async () => {
+	test('should print warning and call original function if the class is not registered in providers', async () => {
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
 

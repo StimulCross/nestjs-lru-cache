@@ -43,11 +43,11 @@ describe('LRU cache module test suite', () => {
 			await app.init();
 		});
 
-		test('LRU cache options should be defined', async () => {
+		test('should define LRU cache options', async () => {
 			testCacheOptions(app.get<LruCacheOptions>(LRU_CACHE_OPTIONS), max, ttl);
 		});
 
-		test('LRU cache should be defined', async () => {
+		test('should define LRU cache instance', async () => {
 			testCacheInstance(app.get<LRUCache<any, any>>(LRU_CACHE));
 		});
 	});
@@ -62,7 +62,7 @@ describe('LRU cache module test suite', () => {
 			testCacheInstance(app.get<LRUCache<any, any>>(LRU_CACHE));
 		};
 
-		test('LRU cache options should be resolved with "useFactory"', async () => {
+		test('should resolve LRU cache options with "useFactory"', async () => {
 			const createOptions = async (): Promise<LruCacheOptions> => ({ max, ttl });
 
 			const testingModule = await Test.createTestingModule({
@@ -72,7 +72,7 @@ describe('LRU cache module test suite', () => {
 			await testModule(app);
 		});
 
-		test('LRU cache imports should be injected to "useFactory"', async () => {
+		test('should inject LRU cache imports to "useFactory"', async () => {
 			const createOptions = async (factory: OptionsFactory): Promise<LruCacheOptions> => {
 				expect(factory).toBeInstanceOf(OptionsFactory);
 				return { max, ttl };
@@ -91,7 +91,7 @@ describe('LRU cache module test suite', () => {
 			await testModule(app);
 		});
 
-		test('LRU cache options should be resolved with "useExisting"', async () => {
+		test('should resolve LRU cache options with "useExisting"', async () => {
 			const testingModule = await Test.createTestingModule({
 				imports: [
 					LruCacheModule.registerAsync({
@@ -104,7 +104,7 @@ describe('LRU cache module test suite', () => {
 			await testModule(app);
 		});
 
-		test('LRU cache options should be resolved with "useClass"', async () => {
+		test('should resolve LRU cache options with "useClass"', async () => {
 			const testingModule = await Test.createTestingModule({
 				imports: [
 					LruCacheModule.registerAsync({
@@ -132,7 +132,7 @@ describe('LRU cache module test suite', () => {
 			await app.init();
 		});
 
-		test('LRUCache instance should be injected using @InjectCache decorator', () => {
+		test('should inject the LRUCache instance using the @InjectCache decorator', () => {
 			const cacheConsumer = app.get(CacheConsumer);
 			testCacheInstance(cacheConsumer.getCache());
 		});

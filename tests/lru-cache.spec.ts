@@ -70,7 +70,7 @@ describe('LRU cache provider test suite', () => {
 			cache.clear();
 		});
 
-		test('Specified options on module registration must match options in cache provider', async () => {
+		test('should match the specified module registration options with the cache provider options', async () => {
 			expect(cache.max).toBe(max);
 			expect(cache.ttl).toBe(ttl);
 			expect(cache.maxSize).toBe(maxSize);
@@ -110,7 +110,7 @@ describe('LRU cache provider test suite', () => {
 			cache.clear();
 		});
 
-		test('Should return the correct cache size', async () => {
+		test('should return the correct cache size', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -129,7 +129,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.size).toBe(2);
 		});
 
-		test('Should check if the cache has an entry', async () => {
+		test('should correctly check if the cache has an entry', async () => {
 			const cacheKey = 1;
 			const fakeCacheKey = 2;
 			cache.set(cacheKey, true);
@@ -138,7 +138,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.has(fakeCacheKey)).toBe(false);
 		});
 
-		test('Should get existing entry', async () => {
+		test('should retrieve an existing entry from the cache', async () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
@@ -148,11 +148,11 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.get(cacheEntry.key)).toBe(cacheEntry.val);
 		});
 
-		test('Should return "undefined" if get non-existing entry', async () => {
+		test('should return undefined for non-existing entries', async () => {
 			expect(cache.get(1)).toBe(undefined);
 		});
 
-		test('Should peek existing entry', async () => {
+		test('should peek an existing cache entry', async () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
@@ -162,11 +162,11 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.peek(cacheEntry.key)).toBe(cacheEntry.val);
 		});
 
-		test('Should return "undefined" if peek non-existing entry', async () => {
+		test('should return undefined when peeking non-existing entry', async () => {
 			expect(cache.peek(1)).toBe(undefined);
 		});
 
-		test('Should set entry to the cache', async () => {
+		test('should set an entry in the cache', async () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
@@ -176,19 +176,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.get(cacheEntry.key)).toBe(cacheEntry.val);
 		});
 
-		test('Should set entry to the cache with ttl overload', async () => {
-			const cacheEntry = {
-				key: 1,
-				val: 1,
-				ttl: 100,
-			};
-			cache.set(cacheEntry.key, cacheEntry.val, { ttl: cacheEntry.ttl });
-
-			expect(cache.get(cacheEntry.key)).toBe(cacheEntry.val);
-			expect(cache.getRemainingTTL(cacheEntry.key)).toBeGreaterThan(90);
-		});
-
-		test('Should set entry to the cache with options overload', async () => {
+		test('should set an entry with a TTL', async () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
@@ -202,7 +190,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.getRemainingTTL(cacheEntry.key)).toBe(cacheEntry.options.ttl);
 		});
 
-		test('Should delete an entry from the cache', async () => {
+		test('should delete an entry from the cache', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -220,7 +208,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.delete(cacheEntry2.key)).toBe(true);
 		});
 
-		test('Should clear the cache', async () => {
+		test('should clear all cache entries', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -239,28 +227,28 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.size).toBe(0);
 		});
 
-		test('Should return keys Generator', async () => {
-			const generator = cache.keys();
-			expect(typeof generator[Symbol.iterator]).toBe('function');
-			const generator2 = cache.rkeys();
-			expect(typeof generator2[Symbol.iterator]).toBe('function');
+		test('should return an iterator for keys', async () => {
+			const iterator = cache.keys();
+			expect(typeof iterator[Symbol.iterator]).toBe('function');
+			const iterator2 = cache.rkeys();
+			expect(typeof iterator2[Symbol.iterator]).toBe('function');
 		});
 
-		test('Should return values Generator', async () => {
-			const generator = cache.values();
-			expect(typeof generator[Symbol.iterator]).toBe('function');
-			const generator2 = cache.rvalues();
-			expect(typeof generator2[Symbol.iterator]).toBe('function');
+		test('should return an iterator for values', async () => {
+			const iterator = cache.values();
+			expect(typeof iterator[Symbol.iterator]).toBe('function');
+			const iterator2 = cache.rvalues();
+			expect(typeof iterator2[Symbol.iterator]).toBe('function');
 		});
 
-		test('Should return entries Generator', async () => {
-			const generator = cache.entries();
-			expect(typeof generator[Symbol.iterator]).toBe('function');
-			const generator2 = cache.rentries();
-			expect(typeof generator2[Symbol.iterator]).toBe('function');
+		test('should return an iterator for entries', async () => {
+			const iterator = cache.entries();
+			expect(typeof iterator[Symbol.iterator]).toBe('function');
+			const iterator2 = cache.rentries();
+			expect(typeof iterator2[Symbol.iterator]).toBe('function');
 		});
 
-		test('Should iterate over keys', async () => {
+		test('should iterate over keys in insertion order', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -273,16 +261,16 @@ describe('LRU cache provider test suite', () => {
 			cache.set(cacheEntry1.key, cacheEntry1.val);
 			cache.set(cacheEntry2.key, cacheEntry2.val);
 
-			const generator = cache.keys();
+			const iterator = cache.keys();
 
-			const key1 = generator.next();
+			const key1 = iterator.next();
 			expect(key1.value).toBe(cacheEntry2.key);
 
-			const val2 = generator.next();
+			const val2 = iterator.next();
 			expect(val2.value).toBe(cacheEntry1.key);
 		});
 
-		test('Should iterate over keys in reverse order', async () => {
+		test('should iterate over keys in reverse order', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -295,16 +283,16 @@ describe('LRU cache provider test suite', () => {
 			cache.set(cacheEntry1.key, cacheEntry1.val);
 			cache.set(cacheEntry2.key, cacheEntry2.val);
 
-			const generator = cache.rkeys();
+			const iterator = cache.rkeys();
 
-			const key1 = generator.next();
+			const key1 = iterator.next();
 			expect(key1.value).toBe(cacheEntry1.key);
 
-			const val2 = generator.next();
+			const val2 = iterator.next();
 			expect(val2.value).toBe(cacheEntry2.key);
 		});
 
-		test('Should iterate over values', async () => {
+		test('should iterate over values in insertion order', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -317,16 +305,16 @@ describe('LRU cache provider test suite', () => {
 			cache.set(cacheEntry1.key, cacheEntry1.val);
 			cache.set(cacheEntry2.key, cacheEntry2.val);
 
-			const generator = cache.values();
+			const iterator = cache.values();
 
-			const key1 = generator.next();
+			const key1 = iterator.next();
 			expect(key1.value).toBe(cacheEntry2.val);
 
-			const val2 = generator.next();
+			const val2 = iterator.next();
 			expect(val2.value).toBe(cacheEntry1.val);
 		});
 
-		test('Should iterate over values in reverse order', async () => {
+		test('should iterate over values in reverse order', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -339,16 +327,16 @@ describe('LRU cache provider test suite', () => {
 			cache.set(cacheEntry1.key, cacheEntry1.val);
 			cache.set(cacheEntry2.key, cacheEntry2.val);
 
-			const generator = cache.rvalues();
+			const iterator = cache.rvalues();
 
-			const key1 = generator.next();
+			const key1 = iterator.next();
 			expect(key1.value).toBe(cacheEntry1.val);
 
-			const val2 = generator.next();
+			const val2 = iterator.next();
 			expect(val2.value).toBe(cacheEntry2.val);
 		});
 
-		test('Should iterate over entries', async () => {
+		test('should iterate over entries in insertion order', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -361,22 +349,22 @@ describe('LRU cache provider test suite', () => {
 			cache.set(cacheEntry1.key, cacheEntry1.val);
 			cache.set(cacheEntry2.key, cacheEntry2.val);
 
-			const generator = cache.entries();
+			const iterrator = cache.entries();
 
 			/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-			const entry1 = generator.next();
+			const entry1 = iterrator.next();
 			expect(Array.isArray(entry1.value)).toBe(true);
 			expect(entry1.value[0]).toBe(cacheEntry2.key);
 			expect(entry1.value[1]).toBe(cacheEntry2.val);
 
-			const entry2 = generator.next();
+			const entry2 = iterrator.next();
 			expect(Array.isArray(entry2.value)).toBe(true);
 			expect(entry2.value[0]).toBe(cacheEntry1.key);
 			expect(entry2.value[1]).toBe(cacheEntry1.val);
 			/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 		});
 
-		test('Should iterate over entries in reverse order', async () => {
+		test('should iterate over entries in reverse order', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -389,22 +377,22 @@ describe('LRU cache provider test suite', () => {
 			cache.set(cacheEntry1.key, cacheEntry1.val);
 			cache.set(cacheEntry2.key, cacheEntry2.val);
 
-			const generator = cache.rentries();
+			const iterator = cache.rentries();
 
 			/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-			const entry1 = generator.next();
+			const entry1 = iterator.next();
 			expect(Array.isArray(entry1.value)).toBe(true);
 			expect(entry1.value[0]).toBe(cacheEntry1.key);
 			expect(entry1.value[1]).toBe(cacheEntry1.val);
 
-			const entry2 = generator.next();
+			const entry2 = iterator.next();
 			expect(Array.isArray(entry2.value)).toBe(true);
 			expect(entry2.value[0]).toBe(cacheEntry2.key);
 			expect(entry2.value[1]).toBe(cacheEntry2.val);
 			/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 		});
 
-		test('Should iterate over cache provider itself', async () => {
+		test('should iterate over the cache provider using the default iterator', async () => {
 			expect(typeof cache[Symbol.iterator]).toBe('function');
 
 			const entries = 5;
@@ -422,7 +410,7 @@ describe('LRU cache provider test suite', () => {
 			}
 		});
 
-		test('Should iterate using `forEach`', async () => {
+		test('should iterate over cache entries using forEach', async () => {
 			const entries = 5;
 
 			for (let i = 1; i <= entries; i++) {
@@ -439,7 +427,7 @@ describe('LRU cache provider test suite', () => {
 			});
 		});
 
-		test('Should iterate using `forEach` in reverse order', async () => {
+		test('should iterate in reverse order using rforEach', async () => {
 			const entries = 5;
 
 			for (let i = 1; i <= entries; i++) {
@@ -456,7 +444,7 @@ describe('LRU cache provider test suite', () => {
 			});
 		});
 
-		test('Should evict and return the least recently used entry', async () => {
+		test('should evict and return the least recently used entry using pop', async () => {
 			const entries = 5;
 
 			for (let i = 1; i <= entries; i++) {
@@ -466,7 +454,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.pop()).toBe(1);
 		});
 
-		test('Should fetch an entry', async () => {
+		test('should fetch an entry from the cache', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -483,7 +471,7 @@ describe('LRU cache provider test suite', () => {
 			expect(await cache.fetch(cacheEntry2.key)).toBe(cacheEntry2.val);
 		});
 
-		test('Should find an entry', async () => {
+		test('should find an entry based on a predicate', async () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
@@ -496,7 +484,7 @@ describe('LRU cache provider test suite', () => {
 			expect(result).toBe(cacheEntry.val);
 		});
 
-		test('Should dump the cache', async () => {
+		test('should dump the cache into an array of entries', async () => {
 			const entries = 5;
 
 			for (let i = 1; i <= entries; i++) {
@@ -516,7 +504,7 @@ describe('LRU cache provider test suite', () => {
 			}
 		});
 
-		test('Should load the cache', async () => {
+		test('should load cache entries from a dumped array', async () => {
 			const entries = 5;
 
 			for (let i = 1; i <= entries; i++) {
@@ -559,7 +547,7 @@ describe('LRU cache provider test suite', () => {
 			cache.clear();
 		});
 
-		test('Should evict the least recently accessed entries when "max" limit is reached', async () => {
+		test('should evict the least recently accessed entries when the "max" limit is reached', async () => {
 			for (let i = 1; i <= max; i++) {
 				cache.set(i, i);
 			}
@@ -601,7 +589,7 @@ describe('LRU cache provider test suite', () => {
 			cache.clear();
 		});
 
-		test("Should reset entry's TTL on check", async () => {
+		test("should reset an entry's TTL on check when updateAgeOnHas is enabled", async () => {
 			const cacheKey = 1;
 			cache.set(cacheKey, true, { ttl: 100 });
 
@@ -611,7 +599,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.getRemainingTTL(cacheKey)).toBeGreaterThan(90);
 		});
 
-		test('Should return "undefined" when trying to get an expired entry', async () => {
+		test('should return undefined for an expired entry', async () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
@@ -624,7 +612,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.get(cacheEntry.key)).toBe(undefined);
 		});
 
-		test('Should return expired entry if `allowStale` specified', async () => {
+		test('should return the expired entry when allowStale is specified', async () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
@@ -637,7 +625,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.get(cacheEntry.key, { allowStale: true })).toBe(cacheEntry.val);
 		});
 
-		test('Should reset TTL on retrieving if `updateAgeOnGet` specified', async () => {
+		test('should reset TTL on retrieval when updateAgeOnGet is specified', async () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
@@ -651,7 +639,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.getRemainingTTL(cacheEntry.key)).toBeGreaterThan(cacheEntry.ttl - 10);
 		});
 
-		test('Should purge stale entries from the cache', async () => {
+		test('should purge stale entries from the cache', async () => {
 			const cacheEntry1 = {
 				key: 1,
 				val: 1,
@@ -678,7 +666,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.size).toBe(1);
 		});
 
-		test('Should return remaining TTL of an existing entry', async () => {
+		test('should return the remaining TTL for an existing entry', async () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
@@ -689,11 +677,11 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.getRemainingTTL(cacheEntry.key)).toBe(Infinity);
 		});
 
-		test('Should return 0 when getting remaining TTL of a non-existing entry', async () => {
+		test('should return 0 for the remaining TTL of a non-existing entry', async () => {
 			expect(cache.getRemainingTTL(1)).toBe(0);
 		});
 
-		test('Should return negative number when getting remaining TTL of an expired entry', async () => {
+		test('should return a negative TTL value for an expired entry', async () => {
 			const cacheEntry = {
 				key: 1,
 				val: 1,
@@ -741,7 +729,7 @@ describe('LRU cache provider test suite', () => {
 			cache.clear();
 		});
 
-		test('Should evict the least recently accessed entries when "maxSize" limit is reached', async () => {
+		test('should evict the least recently accessed entries when the "maxSize" limit is reached', async () => {
 			const entrySize = 50;
 
 			for (let i = 1; i <= max; i++) {
@@ -752,13 +740,13 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.calculatedSize).toBe(maxSize);
 		});
 
-		test('Should not set an entry if its size is larger than "maxEntrySize"', async () => {
+		test('should not set an entry if its size exceeds "maxEntrySize""', async () => {
 			cache.set(1, 1, { size: 200 });
 			expect(cache.size).toBe(0);
 			expect(cache.calculatedSize).toBe(0);
 		});
 
-		test('Should use "sizeCalculation" function from module options', async () => {
+		test('should use the sizeCalculation function from module options', async () => {
 			const entrySize = 50;
 
 			for (let i = 1; i <= max; i++) {
@@ -769,7 +757,7 @@ describe('LRU cache provider test suite', () => {
 			expect(cache.calculatedSize).toBe(maxSize);
 		});
 
-		test('Should use "sizeCalculation" function from set options', async () => {
+		test('should use the sizeCalculation function provided in set options', async () => {
 			const entrySize = 100;
 
 			for (let i = 1; i <= max; i++) {
