@@ -115,4 +115,19 @@ export class TestService {
 	public async getRandomNumberWithEnabledTtlUpdateAsync(): Promise<number> {
 		return Math.random();
 	}
+
+	@CachedAsync({ ttl: 100 })
+	public async getRandomNumberAsyncWithError(): Promise<number> {
+		throw new Error('Simulated error');
+	}
+
+	@CachedAsync({ ttl: 100, deleteRejectedPromise: true })
+	public async getRandomNumberAsyncWithErrorAndDeletedPormise(): Promise<number> {
+		throw new Error('Simulated error');
+	}
+
+	@CachedAsync({ ttl: 100, useArgumentOptions: true })
+	public async getRandomNumberAsyncWithErrorWithArgumentOptions(_options?: CacheArgumentOptions): Promise<number> {
+		throw new Error('Simulated error');
+	}
 }

@@ -254,4 +254,65 @@ describe('Cached async decorator test suite', () => {
 
 		loggerWarnSpy.mockRestore();
 	});
+
+	test('should cache a rejected promise and return the same error for multiple calls if "deleteRejectedPromise" is false in decorator options', async () => {
+		const testService = await app.resolve(TestService);
+		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsyncWithError`);
+
+		await expect(testService.getRandomNumberAsyncWithError()).rejects.toThrow('Simulated error');
+
+		const cachedPromise = cache.get(cachedKey);
+
+		expect(cachedPromise).toBeInstanceOf(Promise);
+		await expect(cachedPromise).rejects.toThrow('Simulated error');
+
+		const promise2 = testService.getRandomNumberAsyncWithError();
+		await expect(promise2).rejects.toThrow('Simulated error');
+	});
+
+	test('should delete a rejected promise from cache if "deleteRejectedPromise" is "true" in decorator options', async () => {
+		// Включаем опцию deleteRejectedPromise.
+		const testService = await app.resolve(TestService);
+		const spy = jest.spyOn(cache, 'delete');
+		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsyncWithErrorAndDeletedPormise`);
+
+		try {
+			await testService.getRandomNumberAsyncWithErrorAndDeletedPormise();
+		} catch {
+			expect(spy).toHaveBeenCalledWith(cachedKey);
+			expect(cache.has(cachedKey)).toBe(false);
+		}
+
+		spy.mockRestore();
+	});
+
+	test('should delete a rejected promise from cache if "deleteRejectedPromise" is falsy in argument options', async () => {
+		const testService = await app.resolve(TestService);
+		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsyncWithError`);
+
+		await expect(testService.getRandomNumberAsyncWithError()).rejects.toThrow('Simulated error');
+
+		const cachedPromise = cache.get(cachedKey);
+
+		expect(cachedPromise).toBeInstanceOf(Promise);
+		await expect(cachedPromise).rejects.toThrow('Simulated error');
+
+		const promise2 = testService.getRandomNumberAsyncWithError();
+		await expect(promise2).rejects.toThrow('Simulated error');
+	});
+
+	test('should delete a rejected promise from cache if "deleteRejectedPromise" is "true" in argument options', async () => {
+		const testService = await app.resolve(TestService);
+		const spy = jest.spyOn(cache, 'delete');
+		const cachedKey = wrapCacheKey(`${TestService.name}.getRandomNumberAsyncWithErrorWithArgumentOptions`);
+
+		try {
+			await testService.getRandomNumberAsyncWithErrorWithArgumentOptions({ deleteRejectedPromise: true });
+		} catch {
+			expect(spy).toHaveBeenCalledWith(cachedKey);
+			expect(cache.has(cachedKey)).toBe(false);
+		}
+
+		spy.mockRestore();
+	});
 });

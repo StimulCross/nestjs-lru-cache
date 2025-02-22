@@ -47,4 +47,21 @@ export interface CacheArgumentOptions<K = unknown, V = unknown, FC = unknown>
 	 * `useArgumentOptions` in {@link CachedDecoratorOptions} / {@link CachedAsyncDecoratorOptions} to `true`.
 	 */
 	useSharedCache?: boolean;
+
+	/**
+	 * Determines whether to delete a rejected Promise from the cache.
+	 *
+	 * If a cached Promise is rejected (fails to resolve), it will normally remain in the cache for the specified TTL,
+	 * meaning any subsequent calls with the same cache key will return the same rejected Promise during this period.
+	 *
+	 * When this option is enabled (`true`), the rejected Promise will be immediately deleted from the cache.
+	 * As a result, the next call with the same cache key will execute the original function again, potentially
+	 * giving the opportunity to retry the operation or produce a different result.
+	 *
+	 * Use this option if you want to ensure that errors are not cached, allowing for retries or alternate handling
+	 * of failures.
+	 *
+	 * @default false
+	 */
+	deleteRejectedPromise?: boolean;
 }

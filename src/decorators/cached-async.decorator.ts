@@ -64,7 +64,17 @@ function createCachedAsyncFunction(
 			this[CACHE_INSTANCE].set(cacheKey, originalPromise, mergedOptions);
 		}
 
-		const result = await originalPromise;
+		let result: unknown;
+
+		try {
+			result = await originalPromise;
+		} catch (e) {
+			if (mergedOptions.deleteRejectedPromise) {
+				this[CACHE_INSTANCE].delete(cacheKey);
+			}
+
+			throw e;
+		}
 
 		if (mergedOptions.cachePromiseResult ?? true) {
 			this[CACHE_INSTANCE].set(cacheKey, result, mergedOptions);
