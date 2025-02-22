@@ -600,7 +600,7 @@ Some of these options will override the corresponding settings defined in the de
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import { Cached, CacheArgumentOptions, CachedAsyncArgumentOptions } from 'nestjs-lru-cache';
+import { Cached, CacheArgumentOptions } from 'nestjs-lru-cache';
 
 @Injectable()
 export class AnyCustomProvider {
@@ -610,7 +610,7 @@ export class AnyCustomProvider {
 	}
 
 	@CachedAsync({ ttl: 5000, useArgumentOptions: true })
-	public async getUserById(id: number, _options?: CachedAsyncArgumentOptions): Promise<User> {
+	public async getUserById(id: number, _options?: CacheArgumentOptions): Promise<User> {
 		// ...
 	}
 }
