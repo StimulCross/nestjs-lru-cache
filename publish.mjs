@@ -43,6 +43,6 @@ await runYarn(['format:check']);
 
 const versionType = process.argv[2] ?? 'patch';
 
-await runNpm(['version', '--commit-hooks', 'false', '--preid', 'pre', versionType, '-m', 'build: release version %s']);
+await runNpm(['version', '--commit-hooks', 'false', '--preid', 'next', versionType, '-m', 'build: release version %s']);
 
 await (versionType.startsWith('pre') ? runNpm(['publish', '--tag', 'next']) : runNpm(['publish']));
