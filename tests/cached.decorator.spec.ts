@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from 'node:timers/promises';
 import { Logger } from '@nestjs/common';
 import { type NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
@@ -8,7 +9,6 @@ import { TestService } from './test-app/test.service';
 import { CACHE_INSTANCE_ID_PROPERTY } from '../src/constants';
 import { wrapCacheKey } from '../src/utils';
 import { NonInjectableCacheService } from './test-app/non-ijectable-cache.service';
-import { sleep } from './test-app/utils/sleep';
 
 describe('Cached decorator test suite', () => {
 	let app: NestApplication;

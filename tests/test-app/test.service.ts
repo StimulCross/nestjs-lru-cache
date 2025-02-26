@@ -1,5 +1,5 @@
+import { setTimeout as sleep } from 'node:timers/promises';
 import { Injectable, Scope } from '@nestjs/common';
-import { sleep } from './utils/sleep';
 import { Cached, CachedAsync, type CacheArgumentOptions } from '../../src';
 import { CACHE_INSTANCE_ID_PROPERTY, CACHE_INSTANCES_PROPERTY } from '../../src/constants';
 
